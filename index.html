@@ -1,0 +1,4191 @@
+<title>Max/M4L オブジェクト辞典</title>
+<style>
+:root{
+  --bg:#f5f5f5;
+  --surface:#ffffff;
+  --surface-2:#f5f5f5;
+  --text:#333333;
+  --text-dim:#5c5c5c;
+  --border:#cccccc;
+  --accent:#0077C2;
+  --accent-ink:#00619a;
+  --accent-soft:#dff3ff;
+  --accent2:#00BFFF;
+  --accent2-soft:#e2f8ff;
+  --accent3:#6a5acd;
+  --accent3-soft:#eae6fa;
+  --warn:#a15a12;
+  --warn-soft:#fbead8;
+  --shadow: 0 1px 2px rgba(30,40,50,0.06), 0 6px 20px rgba(30,40,50,0.06);
+  --radius: 14px;
+  --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --sans: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Zen Kaku Gothic New', sans-serif;
+  --disp: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f151c;
+    --surface:#161e27;
+    --surface-2:#1c2530;
+    --text:#e7edf3;
+    --text-dim:#93a3b3;
+    --border:#2b3844;
+    --accent:#59a5f5;
+    --accent-ink:#cfe6ff;
+    --accent-soft:#0e304d;
+    --accent2:#00BFFF;
+    --accent2-soft:#063241;
+    --accent3:#b8a6f5;
+    --accent3-soft:#2b2350;
+    --warn:#f0a875;
+    --warn-soft:#3a2412;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f151c;
+  --surface:#161e27;
+  --surface-2:#1c2530;
+  --text:#e7edf3;
+  --text-dim:#93a3b3;
+  --border:#2b3844;
+  --accent:#59a5f5;
+  --accent-ink:#cfe6ff;
+  --accent-soft:#0e304d;
+  --accent2:#00BFFF;
+  --accent2-soft:#063241;
+  --accent3:#b8a6f5;
+  --accent3-soft:#2b2350;
+  --warn:#f0a875;
+  --warn-soft:#3a2412;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+}
+
+*{box-sizing:border-box;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  margin:0;
+  padding-inline:0;
+  min-height:100%;
+}
+h1,h2,h3{ font-family:var(--disp); text-wrap:balance; margin:0; }
+code, .mono{ font-family:var(--mono); }
+a{ color:var(--accent); }
+
+.wrap{
+  max-width: 980px;
+  margin: 0 auto;
+  padding-inline: 16px;
+  padding-block: 20px 64px;
+}
+
+/* ---------- Header ---------- */
+header.top{
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 30;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.top-inner{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.title-row{
+  display:flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.title-row h1{
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: .01em;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.title-row h1 .badge-count{
+  font-family: var(--mono);
+  font-size: .68rem;
+  font-weight: 600;
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+.search-box{
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+.search-box input{
+  width:100%;
+  font-family: var(--sans);
+  font-size: .92rem;
+  padding: 10px 14px 10px 36px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+}
+.search-box input:focus{ border-color: var(--accent); }
+.search-box svg{
+  position:absolute; left:12px; width:16px; height:16px; color:var(--text-dim); pointer-events:none;
+}
+.result-info{
+  font-size:.78rem;
+  color:var(--text-dim);
+  padding-left: 4px;
+  min-height: 1.1em;
+}
+.chips{
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  padding-bottom:2px;
+  scrollbar-width: thin;
+}
+.chip{
+  flex: 0 0 auto;
+  font-family: var(--sans);
+  font-size: .74rem;
+  font-weight:600;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text-dim);
+  border-radius:999px;
+  padding: 5px 11px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.chip[aria-pressed="true"]{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#fff;
+}
+:root[data-theme="dark"] .chip[aria-pressed="true"]{ color:#0a1e2e; }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .chip[aria-pressed="true"]{ color:#0a1e2e; } }
+
+/* ---------- Legend bar (always visible, compact) ---------- */
+.legend-bar{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap: 6px 16px;
+  margin-block: 14px 0;
+  padding: 9px 14px;
+  background: var(--surface);
+  border:1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  font-size: .74rem;
+  color: var(--text-dim);
+}
+.legend-bar .legend-item{ display:flex; gap:5px; align-items:center; white-space:nowrap; }
+.dot{ width:9px; height:9px; border-radius:50%; flex:0 0 auto; }
+.dot.msg{ background:var(--accent); }
+.dot.sig{ background:var(--accent2); }
+.dot.live{ background:var(--accent3); }
+.dot.attr{ background:var(--text-dim); }
+
+/* ---------- Collapsible intro ---------- */
+.intro{
+  margin-block: 8px 0;
+  border:1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
+.intro > summary{
+  list-style:none;
+  cursor:pointer;
+  padding: 10px 16px;
+  font-size:.8rem;
+  font-weight:700;
+  color: var(--text-dim);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.intro > summary::-webkit-details-marker{ display:none; }
+.intro > summary .chevron{ transition: transform .15s ease; }
+.intro[open] > summary .chevron{ transform: rotate(90deg); }
+.intro-body{ padding: 4px 18px 16px; }
+.intro-body p{ margin:0 0 10px; font-size:.85rem; line-height:1.75; color:var(--text-dim); }
+.intro-body p:last-child{ margin-bottom:0; }
+.intro-body strong{ color:var(--text); }
+
+/* ---------- Category sections ---------- */
+.category{
+  margin-top: 18px;
+  border:1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow:hidden;
+  box-shadow: var(--shadow);
+}
+.category > summary{
+  list-style:none;
+  cursor:pointer;
+  padding: 14px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  font-family:var(--disp);
+  font-weight:800;
+  font-size: 1rem;
+}
+.category > summary::-webkit-details-marker{ display:none; }
+.cat-count{
+  font-family: var(--mono);
+  font-size:.72rem;
+  font-weight:600;
+  color:var(--text-dim);
+  background:var(--surface-2);
+  border-radius:999px;
+  padding:2px 10px;
+}
+.chevron{ transition: transform .15s ease; color:var(--text-dim); flex:0 0 auto; }
+.category[open] .chevron{ transform: rotate(90deg); }
+.cat-body{
+  padding: 4px 14px 16px;
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+  gap: 12px;
+}
+.results-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding: 14px 4px 10px;
+  font-family:var(--disp);
+  font-weight:800;
+  font-size: 1rem;
+}
+.results-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+  gap: 12px;
+}
+.cat-tag{
+  font-size:.66rem;
+  font-weight:600;
+  color:var(--text-dim);
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:1px 8px;
+}
+
+/* ---------- Card ---------- */
+.card{
+  border:1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+  padding: 13px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.card-head{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.card-head .dot{ margin-top:0; }
+.card-name{
+  font-family:var(--mono);
+  font-weight:700;
+  font-size:.98rem;
+  color: var(--text);
+}
+.tags-right{ margin-left:auto; display:flex; align-items:center; gap:6px; }
+.uflag{
+  font-size:.65rem;
+  font-weight:700;
+  color: var(--warn);
+  background: var(--warn-soft);
+  border-radius:999px;
+  padding:1px 8px;
+}
+.summary{ font-size:.85rem; line-height:1.6; color:var(--text); }
+.field{ font-size:.78rem; line-height:1.65; color:var(--text-dim); }
+.field b{
+  color:var(--text);
+  font-weight:700;
+  font-size:.68rem;
+  letter-spacing:.03em;
+  display:block;
+  margin-bottom:2px;
+}
+.field ul{ margin:0; padding-left:1.1em; }
+.field li{ margin-bottom:2px; }
+.example{
+  font-size:.78rem;
+  line-height:1.6;
+  background: var(--surface);
+  border-left:3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  padding: 7px 10px;
+  color:var(--text);
+}
+.note{
+  font-size:.76rem;
+  line-height:1.6;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  border-radius: 8px;
+  padding: 7px 10px;
+}
+.hl{ background: color-mix(in srgb, var(--accent) 35%, transparent); border-radius:3px; padding:0 1px; }
+.no-results{
+  text-align:center;
+  color:var(--text-dim);
+  font-size:.9rem;
+  padding: 40px 16px;
+}
+
+footer.foot{
+  margin-top: 28px;
+  padding-top:16px;
+  border-top:1px solid var(--border);
+  font-size:.72rem;
+  color:var(--text-dim);
+  line-height:1.7;
+}
+
+@media (max-width: 480px){
+  .title-row h1{ font-size:1.02rem; }
+  .cat-body, .results-grid{ grid-template-columns: 1fr; }
+}
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+
+<div class="wrap">
+  <header class="top">
+    <div class="top-inner">
+      <div class="title-row">
+        <h1>🎛 Max / M4L オブジェクト辞典 <span class="badge-count" id="totalCount">199</span></h1>
+      </div>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="search" type="text" placeholder="オブジェクト名・機能・キーワードで検索（例: cycle~, フィルター, ノート）" autocomplete="off">
+      </div>
+      <div class="result-info" id="resultInfo"></div>
+    </div>
+  </header>
+
+  <main>
+    <div class="legend-bar">
+      <span class="legend-item"><span class="dot msg"></span>メッセージ用</span>
+      <span class="legend-item"><span class="dot sig"></span>オーディオ信号用（〜）</span>
+      <span class="legend-item"><span class="dot live"></span>Live専用</span>
+      <span class="legend-item"><span class="dot attr"></span>アトリビュート・概念（@設定/使い方）</span>
+      <span class="legend-item"><span class="uflag">要確認</span>＝仕様の細部に注意</span>
+    </div>
+
+    <details class="intro">
+      <summary><svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>このサイトについて（収録範囲・精度の注意）</summary>
+      <div class="intro-body">
+        <p><strong>これは何か。</strong>Max / Max for Live でよく使う中核オブジェクトを、機能・インレット/アウトレットの役割・主な引数・簡単な使用例つきでまとめた早引き辞典です。パッチングの基本操作は理解している前提で、「このオブジェクト、何番目のインレットに何を繋げばいいんだっけ」を素早く確認できることを目的にしています。</p>
+        <p><strong>収録範囲。</strong>制御・演算・データ・MIDI・オーディオ基礎/加工・サンプリング・標準UI・Live専用UI・Live API・ユーティリティ・サブパッチ関連の14カテゴリ、計229オブジェクト。加えて「アトリビュート（@設定）」（@varnameや@parameter_enableなど、@name value形式の設定項目）と「使い方のポイント（概念）」（プレゼンテーションモード、フリーズ、poly~のtargetメッセージなど、単体のオブジェクトではないM4Lの操作・仕組み）の2カテゴリを別枠で解説しています（この計11件はオブジェクト数には含めていません）。よく使われるものを広く収録していますが、Max全体（600種類以上）を網羅したものではなく、Jitter（映像）系やgen~内部オペレーター、サードパーティ製オブジェクトは対象外です。使っていて足りないものに気づいたら、教えてもらえれば随時追加します。</p>
+        <p><strong>確からしさについて。</strong>内容はMax9時点の一般的な仕様知識に基づいています。かなり安定して長年変わっていない仕様がほとんどですが、細部の挙動やバージョン差がありうる項目には「要確認」の印を付けています。重要な判断をする前は、パッチ内でオブジェクトを右クリック→「リファレンスを開く」または <a href="https://docs.cycling74.com/reference/" target="_blank" rel="noopener">docs.cycling74.com</a> の公式リファレンスで最終確認してください。</p>
+        <p><strong>ホット/コールド・インレットとは。</strong>多くのオブジェクトは一番左のインレット（ホット）に値が来た瞬間に計算・出力し、それ以外のインレット（コールド）は値を覚えるだけで出力しない、という決まりになっています。各項目のインレット説明にも明記しています。</p>
+      </div>
+    </details>
+
+    <div class="chips" id="chips"></div>
+
+    <div id="categories"></div>
+    <div class="no-results" id="noResults" hidden>該当するオブジェクトが見つかりませんでした。キーワードを変えてお試しください。</div>
+  </main>
+
+  <footer class="foot">
+    Max 9 / Max for Live を基準に作成した学習用リファレンスです。公式ドキュメントの代替ではなく、日常的な参照用の早引き辞典としてご利用ください。今後カテゴリの追加・修正も可能です。
+  </footer>
+</div>
+
+<script type="application/json" id="__DATA__">
+[
+ {
+  "category": "制御・メッセージフロー",
+  "objects": [
+   {
+    "name": "trigger (t)",
+    "summary": "1つの入力を、決めた順番で複数のメッセージに分けて送り出す。「順番を絶対に守りたいとき」に使う",
+    "inlets": [
+     "1（すべて）: 分解したい値やbangを入れる"
+    ],
+    "outlets": [
+     "引数の数だけできる。出力される順番は右→左（一番右のアウトレットが最初に発火する）"
+    ],
+    "args": "出したい型を左から並べる（b=bang, f=float, i=int, s=symbol, l=list）。[t b f 20] なら3つのアウトレットができ、右から順に「20」→float→bangの順で送り出される",
+    "example": "[t b f] を使い、右アウトレットで先に数値を送ってから、左アウトレットでbangして「準備してから実行」の順番を保証する",
+    "note": "Maxは右のオブジェクトから先に実行されるのが基本ルールだが、trigger を使えばその順番を自分で明示的に決められる。「なぜか思った通りに動かない」というバグの多くは実行順が原因なので、まず疑うべき最重要オブジェクト",
+    "uncertain": false
+   },
+   {
+    "name": "pack",
+    "summary": "バラバラに来る複数の値を、1つのまとまったリストに組み立てる",
+    "inlets": [
+     "1（左端・ホット）: ここに値が来た瞬間、今持っている値全部をリストにして出す",
+     "2以降（コールド）: 値をしまっておくだけで、何も出力しない"
+    ],
+    "outlets": [
+     "1: 組み立てたリスト"
+    ],
+    "args": "各インレットの初期値と型（例: [pack 0 0 0] は3つのfloat用、[pack i s] はint＋symbol用）",
+    "example": "[pack 0 0 0] にX・Y・Zの3つの数値を送り、一番左が更新されたタイミングで [x y z] というリストにまとめて座標データとして使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "pak",
+    "summary": "pack と同じくリストを組み立てるが、こちらは「どのインレットに値が来ても」その都度リストを出す",
+    "inlets": [
+     "1〜N（すべてホット）: どこに値が来ても、そのたびに全体を出力する"
+    ],
+    "outlets": [
+     "1: 組み立てたリスト"
+    ],
+    "args": "pack と同様、各インレットの初期値・型",
+    "example": "3本のスライダーの値を [pak 0 0 0] にまとめてつなぐと、どのスライダーを動かしても常に最新の3つの値がまとめて出てくる",
+    "note": "「一番左に値が来ないと出力されない」という pack の縛りが邪魔なとき（複数のスライダーの値を常にリアルタイムで反映したい、など）はこちらを使う",
+    "uncertain": false
+   },
+   {
+    "name": "unpack",
+    "summary": "1本のリストを、1個ずつの値に分解してそれぞれ別のアウトレットに出す（packの逆）",
+    "inlets": [
+     "1: 分解したいリスト"
+    ],
+    "outlets": [
+     "引数の数だけできる。出る順番は trigger と同じく右→左"
+    ],
+    "args": "分解する個数と型（例: [unpack 0 0 0] は3つのfloatに分解）",
+    "example": "[pack 0 0 0] で作ったリストを [unpack 0 0 0] で受け取り、またX・Y・Zの3つの値に戻す",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "gate",
+    "summary": "「今どの出口を開けておくか」を決めておいて、そこにだけデータを流す。複数の処理のうち1つだけをその場で有効にするスイッチ",
+    "inlets": [
+     "1（左・どの出口を開けるか）: 番号を入れる（0なら全部閉じる）",
+     "2（右・実際に流したいデータ）"
+    ],
+    "outlets": [
+     "引数で決めた数だけできる。開いている出口にだけデータが出てくる"
+    ],
+    "args": "引数1: アウトレットの数（省略時1）。引数2: 最初にどこを開けておくか",
+    "example": "[gate 3] の左インレットに [sel 1 2 3] の出力をつなぎ、条件に応じて3系統のうち1つだけをその場でオンにする",
+    "note": "似た名前の spigot とはインレットの役割が逆（gateは左が制御・右がデータ）。信号（オーディオ）を流したいときは [gate~] を使う",
+    "uncertain": false
+   },
+   {
+    "name": "spigot",
+    "summary": "蛇口（spigot）のように、右インレットのオン/オフだけでデータの流れを止めたり通したりする",
+    "inlets": [
+     "1（左・流したいデータ）",
+     "2（右・開閉スイッチ）: 0で閉じる、0以外で開ける"
+    ],
+    "outlets": [
+     "1: 開いているときだけ左インレットの内容をそのまま出す"
+    ],
+    "args": "初期状態（0または1、省略時0=閉じている）",
+    "example": "[toggle] を spigot の右インレットにつなぎ、[metro] の出力を左インレットにつなぐことで、トグル1つでメトロノームの音の出力そのものを止める",
+    "note": "gate とインレットの役割が逆なので混同しやすい点に注意",
+    "uncertain": false
+   },
+   {
+    "name": "select (sel)",
+    "summary": "入ってきた値が「指定した数と一致するかどうか」を調べ、一致したらそのアウトレットからbangを出す。条件分岐の定番",
+    "inlets": [
+     "1（左）: 調べたい値",
+     "2以降: 比較対象の値を後から書き換えられる"
+    ],
+    "outlets": [
+     "引数の数だけの「一致したらbang」アウトレット＋最後にもう1つ、「どれとも一致しなかったときにその値をそのまま出す」アウトレット"
+    ],
+    "args": "比較したい値を並べる（例: [sel 1 2 3]）",
+    "example": "[sel 60 62 64] にMIDIノート番号を送り、ド・レ・ミの音が来たときだけ対応するアウトレットからbangが出て、それぞれ別の処理につなげられる",
+    "note": "引数が1つだけなら「一致でbang／不一致でそのまま通過」という2アウトレット構成になる",
+    "uncertain": false
+   },
+   {
+    "name": "route",
+    "summary": "リストの先頭の要素を見て振り分け先を決め、一致したものは先頭を取った「残り」を出す。select が bang を返すのに対し、route はデータそのものを返す",
+    "inlets": [
+     "1: 振り分けたいメッセージ（先頭の要素で判定される）",
+     "2以降: 振り分け条件を後から書き換えられる"
+    ],
+    "outlets": [
+     "引数の数だけの「先頭が一致したら残りを出す」アウトレット＋最後に1つ、「どれにも一致しなかったらメッセージ全体をそのまま出す」アウトレット"
+    ],
+    "args": "振り分けたいラベル（数値やシンボル）を並べる（例: [route freq amp gain]）",
+    "example": "\"freq 440\" というリストを [route freq amp] に送ると、先頭アウトレットから \"440\" だけが出てくる。OSCメッセージやコマンド文字列を種類ごとに仕分けるときの定番",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "switch",
+    "summary": "複数の入り口のうち、今どれか1つだけを選んで1つの出口に通す。gate の逆（gateは出口を選ぶ、switchは入口を選ぶ）",
+    "inlets": [
+     "1〜N: データの入り口（選ばれているものだけが通る）",
+     "最後の1つ（制御用）: どの入口を有効にするか選ぶ"
+    ],
+    "outlets": [
+     "1: 選ばれている入口からのデータだけが出てくる"
+    ],
+    "args": "入力インレットの数",
+    "example": "3つの異なるLFOをそれぞれ [switch 3] の各インレットにつなぎ、制御メッセージで「今どのLFOを使うか」を切り替える",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "send (s) / receive (r)",
+    "summary": "パッチコードを引かずに、同じ名前をキーにしてメッセージを送り受け取りする。いわば「ワイヤレスの配線」",
+    "inlets": [
+     "send側 1: 送りたいメッセージ",
+     "receive側: インレットなし（自動的に受信する）"
+    ],
+    "outlets": [
+     "send側: なし",
+     "receive側 1: 届いたメッセージ"
+    ],
+    "args": "共有する名前（[send tempo] と [receive tempo] のように、同じ名前どうしがセットで動く）",
+    "example": "パッチの離れた場所どうしや複数のサブパッチの間で、[s clock] → [r clock] のように配線せずクロック情報を共有する",
+    "note": "同じ名前ならパッチ内のどこからでも受け取れて便利な反面、名前の被りや打ち間違いがそのままバグになるので注意",
+    "uncertain": false
+   },
+   {
+    "name": "value",
+    "summary": "1つの値を、同じ名前を持つ全ての value 同士で共有する。いわば「パッチ内の共有変数」",
+    "inlets": [
+     "1: 値を送ると保存するだけ（出力しない）、bangを送ると保存している値を出す"
+    ],
+    "outlets": [
+     "1: 今保存している値"
+    ],
+    "args": "共有名（省略すると他のどの value とも共有されない、パッチ内だけの一時保存になる）",
+    "example": "パッチのあちこちに置いた [value masterVolume] のどれか1つに新しい値を送ると、他の [value masterVolume] にbangで問い合わせたときも同じ値が返ってくる",
+    "note": "send/receiveと違い「値を覚えておいてくれる」のが特徴。より本格的な状態管理には pattr / pattrstorage の方が向いている",
+    "uncertain": false
+   },
+   {
+    "name": "prepend",
+    "summary": "受け取ったメッセージの先頭に、決まった言葉や数字をくっつけて出す",
+    "inlets": [
+     "1: 元のメッセージ",
+     "2: 先頭にくっつける内容を書き換える"
+    ],
+    "outlets": [
+     "1: 先頭に何かがくっついたメッセージ"
+    ],
+    "args": "先頭にくっつけたい言葉や数字",
+    "example": "数値の前に [prepend set] を挟んでnumber boxに送ると \"set 440\" になり、表示だけを更新して下流には何も送らない、という制御によく使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "append",
+    "summary": "受け取ったメッセージの末尾に、決まった言葉や数字をくっつけて出す",
+    "inlets": [
+     "1: 元のメッセージ",
+     "2: 末尾にくっつける内容を書き換える"
+    ],
+    "outlets": [
+     "1: 末尾に何かがくっついたメッセージ"
+    ],
+    "args": "末尾にくっつけたい言葉や数字",
+    "example": "float値の末尾に [append hz] をつけて \"440 hz\" のようなラベル付きデータにし、後段の [route] で仕分けやすくする",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "swap",
+    "summary": "2つの値の順番を入れ替えて出す",
+    "inlets": [
+     "1（左・ホット）: 1つ目の値",
+     "2（右・コールド）: 2つ目の値"
+    ],
+    "outlets": [
+     "1: 右インレットに入っていた値",
+     "2: 左インレットに入っていた値"
+    ],
+    "args": "各インレットの初期値",
+    "example": "最小値・最大値の順番をひっくり返して [scale] などに渡したいときに使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "change",
+    "summary": "値が変わったときだけ出力し、前と同じ値が続いているときは何もしない「無駄な連打」防止用オブジェクト",
+    "inlets": [
+     "1: 監視したい値"
+    ],
+    "outlets": [
+     "1: 値が変わったときだけ、その新しい値をそのまま出す"
+    ],
+    "args": "最初の比較基準になる値",
+    "example": "センサーやMIDI CCの値が細かく揺れて同じ値を連発するとき、[change] を挟んで無駄な再計算やGUI更新を防ぐ",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "speedlim",
+    "summary": "「これより速い間隔では通さない」という制限をかけ、来た値を間引く",
+    "inlets": [
+     "1: 制限したいメッセージ",
+     "2: 制限する間隔（ms）を書き換える"
+    ],
+    "outlets": [
+     "1: 間引かれた後のメッセージ"
+    ],
+    "args": "許す最小の間隔（ミリ秒）",
+    "example": "マウスドラッグやセンサーなど高頻度で来るデータを [speedlim 50] に通し、GUI更新や通信の負荷を抑える",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "loadbang",
+    "summary": "パッチ（デバイス）を開いた瞬間、自動的に1回だけbangを送ってくれる「起動時のスイッチ」",
+    "inlets": [
+     "なし（自動的に発火する）"
+    ],
+    "outlets": [
+     "1: bang"
+    ],
+    "args": "なし",
+    "example": "[loadbang] → [1] → [toggle] とつなぎ、デバイスを開いた瞬間に初期値をセットしておく",
+    "note": "M4Lデバイスではライブセットを開いたときにも発火するので、ここに時間のかかる重い処理を直結するとセットの読み込みが遅くなる点に注意",
+    "uncertain": false
+   },
+   {
+    "name": "loadmess",
+    "summary": "loadbang と同じくロード時に自動発火するが、bangの代わりに指定したメッセージそのものを送る",
+    "inlets": [
+     "なし（自動的に発火する）"
+    ],
+    "outlets": [
+     "1: 引数で指定したメッセージ"
+    ],
+    "args": "ロード時に送りたい内容",
+    "example": "[loadmess 440] をオシレーターの周波数入力につなぎ、開いた直後にデフォルトの周波数を決めておく",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "defer",
+    "summary": "受け取ったメッセージの実行を「今すぐ」ではなく「今の処理が終わってから」に少しだけ後回しにする",
+    "inlets": [
+     "1: 後回しにしたいメッセージ",
+     "2: 後回しにするときに付ける値を書き換える"
+    ],
+    "outlets": [
+     "1: 後回しにされてから実行された結果"
+    ],
+    "args": "実行時に付加する値（省略可）",
+    "example": "オーバードライブ中（高優先度の処理）に重いGUI更新を行うと処理落ちしてしまう場合、[defer] を挟んで負荷の低いタイミングに逃がす",
+    "note": "「後で実行する」だけで、delay のように具体的な時間は指定できない",
+    "uncertain": false
+   },
+   {
+    "name": "deferlow",
+    "summary": "defer と同じ後回し処理だが、必ず優先度の低い処理待ち行列に送る、より確実な安全策バージョン",
+    "inlets": [
+     "1: 後回しにしたいメッセージ",
+     "2: 後回しにするときに付ける値を書き換える"
+    ],
+    "outlets": [
+     "1: 後回しにされてから実行された結果"
+    ],
+    "args": "実行時に付加する値（省略可）",
+    "example": "自分自身に戻ってくる配線（フィードバックループ）を持つ処理の入口に [deferlow] を挟み、Maxが固まってしまうのを防ぐ",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "qlim",
+    "summary": "連続して来るbangなどを1つずつ順番に処理し、無限ループのような処理でMaxが落ちるのを防ぐ",
+    "inlets": [
+     "1: 実行したいメッセージ"
+    ],
+    "outlets": [
+     "1: 順番に処理された結果"
+    ],
+    "args": "なし",
+    "example": "自分自身に戻ってくる配線を持つ処理に [qlim] を挟み、フリーズを防ぐ",
+    "note": "現在は defer / deferlow を使う場面が多く、qlim はやや古株の部類。細かい挙動は公式リファレンスでの確認が確実",
+    "uncertain": true
+   },
+   {
+    "name": "thispatcher",
+    "summary": "自分がいるパッチ（ウィンドウ）そのものに命令を送り、見た目や構造を操作する",
+    "inlets": [
+     "1: script connect / dirty / fullscreen などの命令"
+    ],
+    "outlets": [
+     "1: 一部の命令に対する返事（出さない場合も多い）"
+    ],
+    "args": "なし",
+    "example": "[thispatcher] に \"fullscreen 1\" を送り、パフォーマンス中にウィンドウを自動で全画面にする",
+    "note": "「script」から始まる命令は専門的なので、詳細は公式リファレンスの確認が必須",
+    "uncertain": false
+   },
+   {
+    "name": "pcontrol",
+    "summary": "サブパッチや bpatcher の再生・巻き戻し・移動を外から命令する",
+    "inlets": [
+     "1: start / stop / goto などの命令"
+    ],
+    "outlets": [
+     "1: 一部の命令への返事"
+    ],
+    "args": "なし",
+    "example": "bpatcher内のタイムライン的な動きを [pcontrol] からの命令で外部から再生開始させる",
+    "note": "使う場面は比較的限られる",
+    "uncertain": false
+   },
+   {
+    "name": "onebang",
+    "summary": "右インレットに一度bangが来たあと、左インレットに来た次の1回分のbangだけを通す「1回きりの門番」",
+    "inlets": [
+     "1（左）: 通したいbang",
+     "2（右）: ゲートを開ける合図のbang"
+    ],
+    "outlets": [
+     "1: 条件を満たしたときのbang",
+     "2: 条件を満たさなかったときのbang"
+    ],
+    "args": "0以外を指定すると、最初の左インレットのbangは右インレットを待たずに通る",
+    "example": "何かの準備が整った合図(右インレット)が来たあと、次に来た実行ボタン(左インレット)のbangだけを1回通す、という順序保証に使う",
+    "note": "",
+    "uncertain": false
+   }
+  ]
+ },
+ {
+  "category": "演算・ロジック・乱数",
+  "objects": [
+   {
+    "name": "+",
+    "summary": "足し算。左に入ってきた値に、右で決めた値を足す",
+    "inlets": [
+     "1（ホット）: 足される数。ここに値が来た瞬間に計算・出力される",
+     "2（コールド）: 足す数を覚えておくだけ"
+    ],
+    "outlets": [
+     "1: 足し算の答え"
+    ],
+    "args": "右インレットの初期値（例: [+ 12] なら常に12を足す）",
+    "example": "[+ 12] でMIDIノート番号を1オクターブ上げる",
+    "note": "int同士ならint、片方でもfloatが混ざればfloatで出てくる",
+    "uncertain": false
+   },
+   {
+    "name": "-",
+    "summary": "引き算。左の値から、右で決めた値を引く",
+    "inlets": [
+     "1（ホット）: 引かれる数",
+     "2（コールド）: 引く数"
+    ],
+    "outlets": [
+     "1: 引き算の答え"
+    ],
+    "args": "右インレットの初期値",
+    "example": "[- 60] でMIDIノート番号を中央C(60)からの相対値に変換する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "*",
+    "summary": "掛け算。左の値に、右で決めた値を掛ける",
+    "inlets": [
+     "1（ホット）: 掛けられる数",
+     "2（コールド）: 掛ける数"
+    ],
+    "outlets": [
+     "1: 掛け算の答え"
+    ],
+    "args": "右インレットの初期値（例: [* 0.5] なら常に半分にする）",
+    "example": "[* 127.] で0〜1の値をMIDI用の0〜127のレンジに変換する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "/",
+    "summary": "割り算。左の値を、右で決めた値で割る",
+    "inlets": [
+     "1（ホット）: 割られる数",
+     "2（コールド）: 割る数"
+    ],
+    "outlets": [
+     "1: 割り算の答え"
+    ],
+    "args": "右インレットの初期値",
+    "example": "[/ 127.] でMIDI CCの値(0〜127)を0〜1に正規化する",
+    "note": "int同士の割り算は小数点以下が切り捨てられる（整数除算）。小数の答えが欲しいときは右の引数に \"127.\" のように小数点を付ける",
+    "uncertain": false
+   },
+   {
+    "name": "%",
+    "summary": "割り算の余り（剰余）だけを出す",
+    "inlets": [
+     "1（ホット）: 割られる数",
+     "2（コールド）: 割る数"
+    ],
+    "outlets": [
+     "1: 余り"
+    ],
+    "args": "右インレットの初期値",
+    "example": "[% 12] でMIDIノート番号から音名（0〜11のどの音かというピッチクラス）を求める",
+    "note": "マイナスの値を入れたときの符号の扱いは環境依存の可能性があり、確実な仕様は公式ドキュメントでの確認を推奨",
+    "uncertain": true
+   },
+   {
+    "name": "pow",
+    "summary": "べき乗（何乗か）を計算する",
+    "inlets": [
+     "1（ホット）: 底（元になる数）",
+     "2（コールド）: 指数（何乗するか）"
+    ],
+    "outlets": [
+     "1: べき乗の答え"
+    ],
+    "args": "右インレットの初期値（指数）",
+    "example": "[pow 2] で入力値を2乗する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "sqrt",
+    "summary": "平方根（ルート）を計算する",
+    "inlets": [
+     "1: 入力値"
+    ],
+    "outlets": [
+     "1: 平方根"
+    ],
+    "args": "なし",
+    "example": "距離を求める計算（三平方の定理）の最後のステップとして使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "==",
+    "summary": "2つの値が「等しいか」を判定する。等しければ1、違えば0を出す",
+    "inlets": [
+     "1（ホット）: 調べたい値",
+     "2（コールド）: 比較する相手の値"
+    ],
+    "outlets": [
+     "1: 1（等しい）または0（等しくない）"
+    ],
+    "args": "右インレットの初期値",
+    "example": "[== 60] でノート番号がちょうど60（中央C）かどうかを判定する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "!=",
+    "summary": "2つの値が「等しくないか」を判定する",
+    "inlets": [
+     "1（ホット）: 調べたい値",
+     "2（コールド）: 比較する相手の値"
+    ],
+    "outlets": [
+     "1: 1（違う）または0（同じ）"
+    ],
+    "args": "右インレットの初期値",
+    "example": "「特定の値以外のときだけ処理を続けたい」という条件分岐に使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": ">",
+    "summary": "左の値が右の値より大きいかを判定する",
+    "inlets": [
+     "1（ホット）: 調べたい値",
+     "2（コールド）: 比較する相手の値"
+    ],
+    "outlets": [
+     "1: 1（真）または0（偽）"
+    ],
+    "args": "右インレットの初期値",
+    "example": "[> 100] でCCの値がしきい値を超えたことを検出し、何かのきっかけ（トリガー）にする",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "<",
+    "summary": "左の値が右の値より小さいかを判定する",
+    "inlets": [
+     "1（ホット）: 調べたい値",
+     "2（コールド）: 比較する相手の値"
+    ],
+    "outlets": [
+     "1: 1（真）または0（偽）"
+    ],
+    "args": "右インレットの初期値",
+    "example": "",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": ">=",
+    "summary": "左の値が右の値以上かを判定する",
+    "inlets": [
+     "1（ホット）: 調べたい値",
+     "2（コールド）: 比較する相手の値"
+    ],
+    "outlets": [
+     "1: 1（真）または0（偽）"
+    ],
+    "args": "右インレットの初期値",
+    "example": "",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "<=",
+    "summary": "左の値が右の値以下かを判定する",
+    "inlets": [
+     "1（ホット）: 調べたい値",
+     "2（コールド）: 比較する相手の値"
+    ],
+    "outlets": [
+     "1: 1（真）または0（偽）"
+    ],
+    "args": "右インレットの初期値",
+    "example": "",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "&&",
+    "summary": "論理AND。両方とも0以外（true）のときだけ1を出す",
+    "inlets": [
+     "1（ホット）: 値A",
+     "2（コールド）: 値B"
+    ],
+    "outlets": [
+     "1: 1または0"
+    ],
+    "args": "右インレットの初期値",
+    "example": "2つの条件が同時に満たされたときだけ処理を通す",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "||",
+    "summary": "論理OR。どちらか片方でも0以外（true）なら1を出す",
+    "inlets": [
+     "1（ホット）: 値A",
+     "2（コールド）: 値B"
+    ],
+    "outlets": [
+     "1: 1または0"
+    ],
+    "args": "右インレットの初期値",
+    "example": "複数の条件のうちどれか1つでも満たせば処理を通す",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "!",
+    "summary": "論理NOT。入力を反転させる（0なら1、0以外なら0）",
+    "inlets": [
+     "1: 入力値"
+    ],
+    "outlets": [
+     "1: 反転した値"
+    ],
+    "args": "なし",
+    "example": "toggleの状態を反転させて別のUIに反映する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "expr",
+    "summary": "数式を文字としてそのまま書いて計算できる、電卓のように使える万能オブジェクト",
+    "inlets": [
+     "式の中で使っている $i1, $f1, $i2 … の数だけインレットができる"
+    ],
+    "outlets": [
+     "式の答えの数だけ（通常1つ）"
+    ],
+    "args": "計算したい式そのもの（例: [expr sqrt($f1*$f1+$f2*$f2)]）。$i=int、$f=float、$s=symbolとして各インレットの値を表す",
+    "example": "[expr ($f1 * 2) - 12] のように、本来なら複数のオブジェクトをつながないといけない計算を1つにまとめて書ける",
+    "note": "他の多くのMaxオブジェクトは左インレットだけが「ホット」（右は値を覚えるだけ）だが、expr は基本的にどのインレットに値が来ても再計算される。複数の値を使う式では、この違いによる入力順の影響に注意",
+    "uncertain": false
+   },
+   {
+    "name": "if",
+    "summary": "「もし〜なら〜、そうでなければ〜」という条件分岐を、1つのオブジェクトの中に文章のように書ける",
+    "inlets": [
+     "式の中の $i1, $f1 … の数だけできる"
+    ],
+    "outlets": [
+     "then/elseで指定したアウトレットの数だけ"
+    ],
+    "args": "条件式そのもの（例: [if $i1 > 60 then 1 else 0]）",
+    "example": "[if $i1 % 12 == 0 then 1 else 0] で「今のノートがオクターブの音（Cの音）かどうか」を判定する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "scale",
+    "summary": "ある範囲の数値を、別の範囲の数値に変換する。「0〜127を0〜1に」のような単位変換の定番",
+    "inlets": [
+     "1（ホット）: 変換したい値",
+     "2〜5（コールド）: 入力の最小値・最大値、出力の最小値・最大値",
+     "6（コールド）: カーブの曲がり具合（指数）"
+    ],
+    "outlets": [
+     "1: 変換された値"
+    ],
+    "args": "入力最小 入力最大 出力最小 出力最大 [カーブ指数]（例: [scale 0 127 0. 1.]）",
+    "example": "[scale 0 127 20. 20000.] でMIDI CCの0〜127を、フィルターのカットオフ周波数20Hz〜20000Hzに割り当てる",
+    "note": "カーブ指数を指定すると、直線的ではなく対数的・指数的な変化にできる。周波数のように「人間の耳には均等に聞こえない」パラメータに有効",
+    "uncertain": false
+   },
+   {
+    "name": "clip",
+    "summary": "値を決めた範囲に収める。範囲をはみ出た値は上限・下限で丸められる",
+    "inlets": [
+     "1（ホット）: 入力値",
+     "2: 下限",
+     "3: 上限"
+    ],
+    "outlets": [
+     "1: 範囲内に収められた値"
+    ],
+    "args": "下限 上限",
+    "example": "[clip 0 127] で、計算結果が万一0〜127の外に出てもMIDI値として安全な範囲に収める",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "abs",
+    "summary": "絶対値を出す（マイナスの符号を取り除く）",
+    "inlets": [
+     "1: 入力値"
+    ],
+    "outlets": [
+     "1: 絶対値"
+    ],
+    "args": "なし",
+    "example": "「差の大きさ」だけを見たいときにプラス・マイナスの符号を消す",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "mtof",
+    "summary": "MIDIノート番号を周波数（Hz）に変換する。鍵盤の番号を実際の音の高さに変える橋渡し役",
+    "inlets": [
+     "1: MIDIノート番号（小数も使え、微分音にも対応）"
+    ],
+    "outlets": [
+     "1: 周波数（Hz）"
+    ],
+    "args": "なし",
+    "example": "[notein] のノート番号を [mtof] に通してから [cycle~] の周波数入力につなぎ、鍵盤演奏をシンセの音に変換する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "ftom",
+    "summary": "周波数（Hz）をMIDIノート番号に変換する。mtof の逆",
+    "inlets": [
+     "1: 周波数（Hz）"
+    ],
+    "outlets": [
+     "1: MIDIノート番号（小数を含むこともある）"
+    ],
+    "args": "なし",
+    "example": "解析で分かった基音の周波数をノート番号に変換して画面に表示する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "atodb",
+    "summary": "0〜1のような普通の音量比を、デシベル（dB）表記に変換する",
+    "inlets": [
+     "1: 音量比（振幅）"
+    ],
+    "outlets": [
+     "1: デシベル値"
+    ],
+    "args": "なし",
+    "example": "[live.gain~] などの音量値を、人間が読みやすいdB表示に変換する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "dbtoa",
+    "summary": "デシベル（dB）を、0〜1のような普通の音量比に変換する。atodb の逆",
+    "inlets": [
+     "1: デシベル値"
+    ],
+    "outlets": [
+     "1: 音量比（振幅）"
+    ],
+    "args": "なし",
+    "example": "ユーザーに\"-6 dB\"のように入力してもらい、[dbtoa] で実際に [*~] に渡すゲイン値に変換する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "random",
+    "summary": "サイコロのようにランダムな整数を出す",
+    "inlets": [
+     "1: bangや値を入れるとランダムな値を出す",
+     "2: 出る範囲（最大値）を書き換える"
+    ],
+    "outlets": [
+     "1: 0〜(範囲-1)のランダムな整数"
+    ],
+    "args": "範囲（例: [random 12] なら0〜11のどれか）",
+    "example": "[random 12] の出力に [+ 60] を足して、1オクターブ内のランダムなMIDIノートを作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "drunk",
+    "summary": "前の値から少しだけ上下にふらつきながら進む、酔っ払いの千鳥足のようなランダムな数列を作る",
+    "inlets": [
+     "1: bangで次の値を作る。値を送ると今の位置を変更",
+     "2: 一歩でどれだけ動けるか（最大幅）を書き換える",
+     "3: 出る範囲の最大値を書き換える"
+    ],
+    "outlets": [
+     "1: 生成された値"
+    ],
+    "args": "出る範囲の最大値、一歩あたりの最大幅",
+    "example": "[drunk 127 5] をメロディ作りに使うと、音の高さが自然に上下しつつ急に飛躍しすぎない旋律になる",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "urn",
+    "summary": "「クジ引き」のように、同じ値が2回続けて出ないよう、決めた範囲の値を1回ずつ順不同で出し切る",
+    "inlets": [
+     "1: bangで次の値を出す。値を送るとリセットして範囲を変更"
+    ],
+    "outlets": [
+     "1: まだ出ていない値の中からランダムに1つ",
+     "2: 全部出し切ったタイミングでbang"
+    ],
+    "args": "範囲（例: [urn 8] なら0〜7を1回ずつ出す）",
+    "example": "8つのステップを、重複なくランダムな順番で鳴らしたいドラムパターンの生成に使う",
+    "note": "",
+    "uncertain": false
+   }
+  ]
+ },
+ {
+  "category": "データ格納・変換",
+  "objects": [
+   {
+    "name": "int (i)",
+    "summary": "整数を1個だけ覚えておいて、bangが来たらまた出してくれる「メモ帳」的なオブジェクト",
+    "inlets": [
+     "1（ホット）: 値を送ると覚えて出力、bangで覚えている値を再出力",
+     "2（コールド）: 値を覚えるだけ"
+    ],
+    "outlets": [
+     "1: 覚えている整数値"
+    ],
+    "args": "初期値",
+    "example": "UIの初期値を保持したり、外から来た値をいったん保存して後でbangで呼び出したりするのに使う",
+    "note": "小数を扱いたいときは [float]（省略形は [f]）を使う",
+    "uncertain": false
+   },
+   {
+    "name": "float (f)",
+    "summary": "小数を1個だけ覚えておいて、bangが来たらまた出してくれるオブジェクト",
+    "inlets": [
+     "1（ホット）: 値を送ると覚えて出力、bangで覚えている値を再出力",
+     "2（コールド）: 値を覚えるだけ"
+    ],
+    "outlets": [
+     "1: 覚えている小数値"
+    ],
+    "args": "初期値",
+    "example": "UIと処理の間に挟んで「今の値」を保持しておくバッファとして使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "table",
+    "summary": "番号（インデックス）を指定して読み書きできる、決まった長さの数値の並び。グラフのように手描きで編集できる",
+    "inlets": [
+     "1: 番号を送るとその位置の値を出す。\"番号 値\" で書き込みもできる"
+    ],
+    "outlets": [
+     "1: 指定した番号の値"
+    ],
+    "args": "テーブル名、サイズ",
+    "example": "ダブルクリックで開くグラフ編集画面で、128ステップのベロシティカーブや簡単な波形を手描きする",
+    "note": "coll と違い、常に「番号→値」の単純な配列。グラフとして見た目に編集しやすいのが特徴",
+    "uncertain": false
+   },
+   {
+    "name": "coll",
+    "summary": "番号や名前をキーにして、リストなど何でも保存・管理できる、簡易データベースのようなオブジェクト",
+    "inlets": [
+     "1: キーを送ると対応する中身を出す。\"キー, 中身\" で書き込み、\"read/write/clear\" などファイル操作の命令も送れる"
+    ],
+    "outlets": [
+     "1: 該当する中身",
+     "2: 一部の命令への返事",
+     "3: 状態やエラーの通知"
+    ],
+    "args": "コレクション名（省略可。外部の.tsvやテキストファイルも読み込める）",
+    "example": "[coll patterns] にステップシーケンスのパターンを複数保存しておき、番号を送るだけで瞬時にそのパターンを呼び出す",
+    "note": "M4Lデバイスの状態保存や、複雑なプリセット管理を組むときの要になるオブジェクトの一つ",
+    "uncertain": false
+   },
+   {
+    "name": "dict",
+    "summary": "JSONのように、名前と値のペアを入れ子にして保存できる、より高機能なデータ保管庫",
+    "inlets": [
+     "1: キーや命令（get/setなど）を送って読み書きする"
+    ],
+    "outlets": [
+     "1: 取り出した値、または dict そのものへの参照"
+    ],
+    "args": "dict名",
+    "example": "{\"osc\":{\"freq\":440,\"amp\":0.5}} のように、複数のパラメータを入れ子構造でまとめて持ち運ぶ",
+    "note": "実際には「dictへの参照（住所のようなもの）」をやり取りしている点がcollと違う、やや上級者向けの機能",
+    "uncertain": false
+   },
+   {
+    "name": "dict.pack",
+    "summary": "バラバラに来る値を、決めた名前（キー）を付けて1つの dict にまとめる",
+    "inlets": [
+     "キーの数だけできる各インレット"
+    ],
+    "outlets": [
+     "1: 組み立てられたdictへの参照"
+    ],
+    "args": "各インレットに対応するキー名（例: [dict.pack freq amp]）",
+    "example": "複数のオシレーターの設定値を1つのdictにまとめて、Live APIやjsに渡す",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "dict.unpack",
+    "summary": "dict から、指定したキーの値だけを取り出してそれぞれのアウトレットに出す",
+    "inlets": [
+     "1: dictへの参照"
+    ],
+    "outlets": [
+     "指定したキーの数だけ、対応する値を出す"
+    ],
+    "args": "取り出したいキー名を並べる",
+    "example": "[dict.unpack freq amp] で受け取ったdictから、周波数と音量を別々の値として取り出す",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "pattr",
+    "summary": "UIなどの値に名前を付けて管理し、保存・復元（プリセットやオートメーション）できるようにするオブジェクト",
+    "inlets": [
+     "1: 値の設定や \"getvalueof\" などの問い合わせ"
+    ],
+    "outlets": [
+     "1: 今の値"
+    ],
+    "args": "pattr名（対応させたいオブジェクトの scripting name と合わせることが多い）",
+    "example": "デバイス内の全てのノブに [pattr] を紐づけておけば、[pattrstorage] や [autopattr] と組み合わせてワンタッチでプリセットの保存・呼び出しができるようになる",
+    "note": "M4Lデバイスの状態をLiveのプリセットやセッションに保存する仕組みの土台",
+    "uncertain": false
+   },
+   {
+    "name": "pattrstorage",
+    "summary": "複数の pattr の値をひとまとめにして、「プリセット」として保存・呼び出しする管理役",
+    "inlets": [
+     "1: プリセット番号でのstore/recallや、その他の管理命令"
+    ],
+    "outlets": [
+     "1〜: 各種の通知やデータ"
+    ],
+    "args": "ストレージ名（対応する pattr と連携する）",
+    "example": "M4Lデバイスに8個のプリセットボタンを用意し、[pattrstorage] にstore/recallの命令を送ってノブの配置一式を切り替える",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "autopattr",
+    "summary": "パッチ内にある scripting name 付きのUIを自動で見つけ出し、pattr管理の対象にまとめて登録してくれる",
+    "inlets": [
+     "なし（置くだけで働く）"
+    ],
+    "outlets": [
+     "なし"
+    ],
+    "args": "なし",
+    "example": "1個ずつ手で [pattr] を配線する代わりに [autopattr] を1個置くだけで、パッチ内のUIをまとめてpattrstorageの管理下に置く",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "preset",
+    "summary": "パッチ内のUIの状態を、ボタン1つでスナップショット保存・呼び出しできる手軽なプリセットUI",
+    "inlets": [
+     "1: 保存/呼び出しの各種命令"
+    ],
+    "outlets": [
+     "1: 呼び出したプリセットの内容の通知など"
+    ],
+    "args": "なし",
+    "example": "本格的な [pattrstorage] を組むほどでもない、簡単な用途で「クリックで保存・呼び出し」の手軽なプリセットボタンとして使う",
+    "note": "pattrstorageに比べると機能はシンプルで、ライブセットへの保存の堅牢さも劣るとされる",
+    "uncertain": true
+   },
+   {
+    "name": "sprintf",
+    "summary": "数字や文字を、決まった書式に沿って読みやすい1つの文章（文字列）に組み立てる",
+    "inlets": [
+     "1: 書式の中の変数に対応する値（複数インレットになることもある）"
+    ],
+    "outlets": [
+     "1: 組み立てられた文字列"
+    ],
+    "args": "書式指定の文字列（例: [sprintf freq: %.1f Hz]）",
+    "example": "数値を \"Freq: 440.0 Hz\" のような読みやすい表示用テキストに変換し、commentやlive.textに表示する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "fromsymbol",
+    "summary": "1つの文字列を、スペース区切りの複数の要素からなるメッセージ（リスト）として読み直す",
+    "inlets": [
+     "1: 文字列"
+    ],
+    "outlets": [
+     "1: 分解されたメッセージ"
+    ],
+    "args": "なし",
+    "example": "テキストファイルから読み込んだ1行の文字列を、実行可能な命令メッセージの形に変換する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "tosymbol",
+    "summary": "リストやメッセージを、1つの文字列（シンボル）にまとめる",
+    "inlets": [
+     "1: 変換したいメッセージ"
+    ],
+    "outlets": [
+     "1: まとめられた文字列"
+    ],
+    "args": "なし",
+    "example": "[coll] などの複雑なメッセージをいったん文字列にして、保存や比較に使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "regexp",
+    "summary": "正規表現というパターンを使って、文字列の中から特定の形を探したり取り出したりする",
+    "inlets": [
+     "1: 検索したい文字列",
+     "2: 検索パターンを書き換える"
+    ],
+    "outlets": [
+     "1: 一致したかどうか（1/0）",
+     "2以降: 見つかった部分（キャプチャグループ）"
+    ],
+    "args": "正規表現パターン",
+    "example": "OSCアドレスやファイル名から、特定の番号部分だけを抜き出す",
+    "note": "正規表現の細かい書き方（対応範囲）は公式リファレンスでの確認が確実",
+    "uncertain": true
+   },
+   {
+    "name": "js",
+    "summary": "JavaScriptのコードをそのまま実行できるオブジェクト。複雑な処理やLive APIの操作をパッチではなくコードで書きたいときに使う",
+    "inlets": [
+     "1〜: 呼び出す関数に応じて数が変わる（jsファイル内の関数がインレット番号に対応する）"
+    ],
+    "outlets": [
+     "1〜: jsファイルの中から明示的に出力した値"
+    ],
+    "args": "実行する.jsファイル名",
+    "example": "[js liveapi_helper.js] の中で `new LiveAPI()` を使い、今選ばれているトラック名やデバイスのパラメータをまとめて取得するような、パッチだと組みにくい処理をコードで書く",
+    "note": "Max 8以降は新しいJavaScriptの書き方にも対応が進んでいるが、対応範囲の詳細はバージョンによって差があるため要確認。M4LでLive APIを操作する定番の手段",
+    "uncertain": true
+   },
+   {
+    "name": "jsui",
+    "summary": "JavaScriptで自分だけの見た目とマウス操作を作れる、オーダーメイドのUIオブジェクト",
+    "inlets": [
+     "1: 描画や操作のための命令"
+    ],
+    "outlets": [
+     "1: スクリプトの中から出力した値"
+    ],
+    "args": "実行する.jsファイル名",
+    "example": "既存のUIにはないデザインのXYパッドや波形エディタを、[jsui] と mgraphics という描画APIを使って自作する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "textedit",
+    "summary": "複数行のテキストを入力・編集できる、メモ欄のようなUI",
+    "inlets": [
+     "1: 表示するテキストの設定やその他の命令"
+    ],
+    "outlets": [
+     "1: 編集が終わったときなどにテキストの内容を出す"
+    ],
+    "args": "なし",
+    "example": "デバイスにメモ欄や、簡単な文字入力による設定欄を作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "text",
+    "summary": "テキストファイルを1行ずつ読み書きできるオブジェクト。設定ファイルやログの保存・読み込みに使う",
+    "inlets": [
+     "1: 書き込みたい内容や、read/write/line などの命令"
+    ],
+    "outlets": [
+     "1: \"set\" が先頭に付いたテキスト行",
+     "2: ファイル読み込みが終わったときにbang",
+     "3: 行数の問い合わせへの返事"
+    ],
+    "args": "最初に読み込むファイル名(省略可)",
+    "example": "\"write\" メッセージでユーザーの設定内容をテキストファイルに保存し、次回起動時に \"read\" で読み戻す",
+    "note": "似た名前の [textfile] というオブジェクトは存在しないので注意(検索するときは [text] で探す)",
+    "uncertain": false
+   },
+   {
+    "name": "dict.serialize",
+    "summary": "dict の中身を、保存や送信ができるテキスト形式(JSONなど)に変換する",
+    "inlets": [
+     "1: dictへの参照"
+    ],
+    "outlets": [
+     "1: 文字列に変換されたdictの中身"
+    ],
+    "args": "なし",
+    "example": "M4Lデバイスの設定をひとまとめのdictにしてから [dict.serialize] で文字列にし、pattrなどで保存する",
+    "note": "圧縮モードやJSONモードは便利だが、Maxの内部で扱う文字列(シンボル)が巨大になり動作が重くなることがあるため、通常はそのままのdict形式での使用が推奨されている",
+    "uncertain": false
+   },
+   {
+    "name": "dict.deserialize",
+    "summary": "テキスト形式(JSONなど)で書かれたデータを、dict オブジェクトに変換する。dict.serialize の逆",
+    "inlets": [
+     "1: dictの構文やJSONで書かれた文字列"
+    ],
+    "outlets": [
+     "1: 組み立てられたdictへの参照"
+    ],
+    "args": "作成するdictの名前(省略可)",
+    "example": "外部から受け取ったJSON形式の設定データを [dict.deserialize] でdictに変換し、パッチ内のパラメータに反映する",
+    "note": "キーや値の中に \":\"(コロン)は使えない",
+    "uncertain": false
+   }
+  ]
+ },
+ {
+  "category": "リスト操作",
+  "objects": [
+   {
+    "name": "zl",
+    "summary": "リスト操作専門の多機能オブジェクト。「zl ＋やりたいこと」という書き方で色々なリスト処理を1つでこなす、いわば十徳ナイフ",
+    "inlets": [
+     "1: 処理したいリストやメッセージ",
+     "2: 比較や処理に使う補助データ"
+    ],
+    "outlets": [
+     "1: 処理結果",
+     "2: 一部の処理で追加情報を出す"
+    ],
+    "args": "やりたいこと＋必要な数値（例: [zl group 4]＝4個ずつまとめる、[zl sort]＝並べ替える、[zl slice 2]＝2個目で切り分ける）",
+    "example": "[zl group 4] でバラバラに届く4つの値を1つのリストにまとめる、[zl sort] でリストを数の順に並べ替える、というように用途ごとに全く違う処理をこなす",
+    "note": "できることが非常に多い（group, sort, slice, sub, reg, iter, join, rotなど）ため、ここでは代表的な使い方だけを紹介。詳しくは zl のリファレンスページで一覧を確認するのが確実",
+    "uncertain": false
+   },
+   {
+    "name": "iter",
+    "summary": "リストを受け取り、その中身を1個ずつバラバラのメッセージにして、超高速に連続で出す",
+    "inlets": [
+     "1: バラしたいリスト"
+    ],
+    "outlets": [
+     "1: リストの中身を先頭から1個ずつ出す"
+    ],
+    "args": "一度にまとめて出す個数（省略時は1個ずつ）",
+    "example": "[coll] から読み出した和音のリストを [iter] でバラし、[makenote] に1音ずつ渡してノートオンする",
+    "note": "ものすごく短い時間で連続して出力されるので、受け取る側の処理順序には注意が必要（trigger との併用が有効）",
+    "uncertain": false
+   },
+   {
+    "name": "join",
+    "summary": "複数のインレットに来た値を、決めたタイミングで1つのリストにまとめる",
+    "inlets": [
+     "1〜N: まとめたい各要素"
+    ],
+    "outlets": [
+     "1: まとめられたリスト"
+    ],
+    "args": "インレットの数",
+    "example": "packに似ているが、こちらは型を固定しないので、より自由な形でリストを組み立てたいときに使う",
+    "note": "pack/unpackとの使い分けは、型指定の柔軟さや用途次第",
+    "uncertain": false
+   },
+   {
+    "name": "thresh",
+    "summary": "短い時間に同じような値が何度も来たとき、最初の1回だけを通す「チャタリング防止」オブジェクト",
+    "inlets": [
+     "1: 監視したい値",
+     "2: 判定する時間（ms）を書き換える"
+    ],
+    "outlets": [
+     "1: 条件を満たした値だけを通す"
+    ],
+    "args": "判定する時間（ミリ秒）",
+    "example": "物理コントローラーのボタンが短時間に何度も反応してしまう「チャタリング」を取り除く",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "sort",
+    "summary": "受け取ったリストを、数の小さい順（または大きい順）に並べ替える",
+    "inlets": [
+     "1: 並べ替えたいリスト",
+     "2: 昇順か降順かを指定"
+    ],
+    "outlets": [
+     "1: 並べ替えられたリスト"
+    ],
+    "args": "0=昇順（省略時）、1=降順",
+    "example": "同時に鳴らした和音のMIDIノートを低い順に並べ替えて、アルペジエーターを作る",
+    "note": "同じことは [zl sort] でもできる",
+    "uncertain": false
+   },
+   {
+    "name": "vexpr",
+    "summary": "expr のリスト版。リストの中身1個1個に、同じ計算式をまとめて適用する",
+    "inlets": [
+     "式の中の $i1, $f1 の数に対応"
+    ],
+    "outlets": [
+     "1: 計算結果のリスト"
+    ],
+    "args": "計算したい式（exprと同じ書き方）",
+    "example": "[vexpr $f1 * 2] で、リストの中身を全部まとめて2倍にする",
+    "note": "",
+    "uncertain": false
+   }
+  ]
+ },
+ {
+  "category": "タイミング・シーケンス制御",
+  "objects": [
+   {
+    "name": "metro",
+    "summary": "決めた間隔（ms）で、ずっとbangを出し続けてくれる「メトロノーム」。多くのシーケンサーの心臓部",
+    "inlets": [
+     "1: 0以外でスタート、0でストップ、bangを送るとすぐ1回発火してから続ける",
+     "2: 間隔（ms）を書き換える"
+    ],
+    "outlets": [
+     "1: bang"
+    ],
+    "args": "間隔（ms）。テンポに合わせたいときは \"4n\"（4分音符ごと）のような書き方もできる",
+    "example": "[metro 250] → [bang] で、4分音符=250ms（120BPM相当）のクロックを刻み、シーケンサーの心臓部にする",
+    "note": "音価（\"4n\"など）で指定した場合は、[transport] のテンポ設定と連動して動く",
+    "uncertain": false
+   },
+   {
+    "name": "tempo",
+    "summary": "Live/Maxのトランスポート（曲の再生位置とテンポ）に正確に同期してbangを出す、metroの「拍合わせ」バージョン",
+    "inlets": [
+     "1: 0以外でスタート、0でストップ"
+    ],
+    "outlets": [
+     "1: bang",
+     "2〜: 拍や小節の位置情報など（設定による）"
+    ],
+    "args": "音価（例: 4nなら4分音符ごと）、スウィング量など",
+    "example": "Liveのテンポにきっちり同期したステップシーケンサーのクロック源として使う",
+    "note": "細かい設定項目の挙動はバージョンで差がある可能性があり要確認",
+    "uncertain": true
+   },
+   {
+    "name": "transport",
+    "summary": "Max/M4L全体で共有される「再生・停止・テンポ・拍子」の情報を取得したり操作したりする",
+    "inlets": [
+     "1: start/stop、テンポ設定などの命令"
+    ],
+    "outlets": [
+     "1: 今の状態やテンポなどの情報"
+    ],
+    "args": "なし",
+    "example": "M4Lデバイスの中でLiveのテンポをそのまま取得し、テンポに同期したLFOやディレイタイムを計算する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "delay",
+    "summary": "bangを受け取ってから、決めた時間（ms）だけ待って、もう一度1回だけbangを出す",
+    "inlets": [
+     "1: bangで時間の計測を開始、0で中止",
+     "2: 待ち時間（ms）を書き換える"
+    ],
+    "outlets": [
+     "1: 待ち時間後のbang"
+    ],
+    "args": "待ち時間（ms）",
+    "example": "ノートオンから一定時間後にノートオフを送る、簡単な発音時間の管理に使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "pipe",
+    "summary": "delay の何でも屋バージョン。あらゆる種類のメッセージを時間差で出せて、複数の遅延を同時に扱える",
+    "inlets": [
+     "1: 遅らせたいメッセージ",
+     "2: 遅らせる時間（ms）を書き換える"
+    ],
+    "outlets": [
+     "1: 遅らせた後のメッセージ"
+    ],
+    "args": "遅らせる時間（ms）、扱うメッセージの型",
+    "example": "複数の音を少しずつ時間差で鳴らす、ギターのかき鳴らし（ストラム）のような効果を作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "clocker",
+    "summary": "決めた間隔で「開始から何ミリ秒経ったか」をずっと出し続ける、経過時間の見張り役",
+    "inlets": [
+     "1: 0以外でスタート、0でストップ",
+     "2: 間隔（ms）を書き換える"
+    ],
+    "outlets": [
+     "1: 開始からの経過時間（ms）"
+    ],
+    "args": "計測する間隔（ms）",
+    "example": "アニメーションやプログレスバーの進み具合を、一定間隔で取得する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "timer",
+    "summary": "1回目のbangから2回目のbangまでに、何ミリ秒かかったかを測る",
+    "inlets": [
+     "1: 計測スタートのbang",
+     "2: 計測ストップのbang"
+    ],
+    "outlets": [
+     "1: かかった時間（ms）"
+    ],
+    "args": "なし",
+    "example": "2回タップした間隔からBPMを割り出す「タップテンポ」機能を作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "counter",
+    "summary": "bangが来るたびに、決めた範囲の中で数を1つずつ増やして（または減らして）くれるカウンター",
+    "inlets": [
+     "1: bangで数える、他に向きを変える命令なども受け付ける",
+     "2: 数える範囲の下限を書き換える",
+     "3: 数える範囲の上限を書き換える"
+    ],
+    "outlets": [
+     "1: 今の数",
+     "2: 上限/下限に着いたときにbangや方向の情報",
+     "3: 一周した回数などの追加情報"
+    ],
+    "args": "数える向き（上昇/下降/往復）、下限、上限",
+    "example": "[counter 0 7] で、8ステップのシーケンサーの「今どのステップにいるか」を管理する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "seq",
+    "summary": "MIDIファイル（.midなど）を録音・再生する",
+    "inlets": [
+     "1: 再生/録音/位置移動などの命令"
+    ],
+    "outlets": [
+     "1: 再生されたMIDIデータ"
+    ],
+    "args": "読み込むファイル名",
+    "example": "外部で作ったMIDIファイルのフレーズを、そのままM4Lデバイスの中で再生する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "detonate",
+    "summary": "MIDIのノートを「開始時刻＋長さ」付きで記録・編集・再生できる、ピアノロールのような高機能シーケンサー",
+    "inlets": [
+     "1: 録音/再生/編集のための各種命令"
+    ],
+    "outlets": [
+     "1〜: 再生されたイベントデータ"
+    ],
+    "args": "多数の設定項目あり",
+    "example": "M4Lデバイスの中に、簡易的なピアノロールを実装する",
+    "note": "機能が非常に多く、比較的古くからあるオブジェクトのため、最新版での扱いやすい代替手段の有無も含めて要確認",
+    "uncertain": true
+   },
+   {
+    "name": "qmetro",
+    "summary": "metro と同じクロックだが、Maxの内部スケジューラの「タイミング合わせ」設定に沿って発火する",
+    "inlets": [
+     "1: 0以外でスタート、0でストップ",
+     "2: 間隔（ms）を書き換える"
+    ],
+    "outlets": [
+     "1: bang"
+    ],
+    "args": "間隔（ms）",
+    "example": "複数のクロックのタイミングをぴったり揃えたいときに、metro の代わりに使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "uzi",
+    "summary": "bangを受け取ると、決めた回数ぶんのbangを一瞬で連射する。プログラミングの「for文（繰り返し処理）」のようなオブジェクト",
+    "inlets": [
+     "1: bangで開始、数値を送るとその回数分だけ開始"
+    ],
+    "outlets": [
+     "1: 連射されるbang",
+     "2: 今何回目かという数（1から始まる）"
+    ],
+    "args": "繰り返す回数",
+    "example": "[uzi 16] で、16個あるtableの要素すべてに一括で同じ処理を適用する",
+    "note": "ものすごい速さで連射されるので、重い処理を繰り返すとMaxが固まってしまう点に注意",
+    "uncertain": false
+   }
+  ]
+ },
+ {
+  "category": "MIDI",
+  "objects": [
+   {
+    "name": "notein",
+    "summary": "外部から届くMIDIの「鍵盤を弾いた/離した」情報（ノートオン/ノートオフ）を受け取る",
+    "inlets": [
+     "なし（外部のMIDI入力を自動で受け取る）"
+    ],
+    "outlets": [
+     "1: ノート番号",
+     "2: ベロシティ（弾いた強さ。0のときはそのノートを離した合図）",
+     "3: MIDIチャンネル"
+    ],
+    "args": "特定のMIDIチャンネルだけ受け取りたいときはチャンネル番号を指定",
+    "example": "鍵盤演奏を [notein] で受け取り、ベロシティ0が来たら「そのノートを離した」と扱いながら音源を鳴らす",
+    "note": "M4Lデバイスでは、Live側の「MIDIを受け取る」設定と組み合わせて使う",
+    "uncertain": false
+   },
+   {
+    "name": "noteout",
+    "summary": "MIDIの「鍵盤を弾いた/離した」情報を外部に送る",
+    "inlets": [
+     "1: ノート番号",
+     "2: ベロシティ",
+     "3: MIDIチャンネル"
+    ],
+    "outlets": [
+     "なし（外部にMIDIを出力する）"
+    ],
+    "args": "標準で使うチャンネル番号",
+    "example": "自分で作ったノートの情報を [noteout] で外部音源やLiveの後段トラックに送る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "ctlin",
+    "summary": "MIDIのつまみ操作（コントロールチェンジ、通称CC）を受け取る",
+    "inlets": [
+     "なし（外部のMIDI入力を自動で受け取る）"
+    ],
+    "outlets": [
+     "1: CCの値",
+     "2: CC番号",
+     "3: MIDIチャンネル"
+    ],
+    "args": "特定のCC番号・チャンネルだけに絞ることもできる",
+    "example": "[ctlin 1] でモジュレーションホイール（CC1）だけを受け取り、ビブラートの深さに割り当てる",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "ctlout",
+    "summary": "MIDIのコントロールチェンジ（CC）を外部に送る",
+    "inlets": [
+     "1: CCの値",
+     "2: CC番号",
+     "3: MIDIチャンネル"
+    ],
+    "outlets": [
+     "なし（外部にMIDIを出力する）"
+    ],
+    "args": "標準で使うCC番号・チャンネル",
+    "example": "内部パラメータの変化を外部のハードウェアシンセにCCとして送り、実機のノブと同期させる",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "pgmin",
+    "summary": "MIDIの音色切り替え信号（プログラムチェンジ）を受け取る",
+    "inlets": [
+     "なし"
+    ],
+    "outlets": [
+     "1: プログラム番号",
+     "2: MIDIチャンネル"
+    ],
+    "args": "特定チャンネルだけに絞ることもできる",
+    "example": "外部コントローラーからのパッチ切り替え信号を受けて、M4Lデバイス側のプリセットを切り替える",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "pgmout",
+    "summary": "MIDIの音色切り替え信号（プログラムチェンジ）を送る",
+    "inlets": [
+     "1: プログラム番号",
+     "2: MIDIチャンネル"
+    ],
+    "outlets": [
+     "なし"
+    ],
+    "args": "標準で使うチャンネル",
+    "example": "内部のプリセット変更を、外部音源のパッチ切り替えとして送信する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "bendin",
+    "summary": "MIDIのピッチベンド（音程を滑らかに上下させる操作）を受け取る",
+    "inlets": [
+     "なし"
+    ],
+    "outlets": [
+     "1: ベンドの値（0〜127。MIDIメッセージの上位バイトのみの、やや粗い精度）",
+     "2: MIDIチャンネル"
+    ],
+    "args": "特定チャンネルだけに絞ることもできる",
+    "example": "ピッチベンドホイールの動きをオシレーターの周波数に反映して、ベンド効果を作る",
+    "note": "もっと細かい14bit精度（0〜16383）の値が欲しいときは [xbendin] を使う",
+    "uncertain": false
+   },
+   {
+    "name": "bendout",
+    "summary": "MIDIのピッチベンドを送る",
+    "inlets": [
+     "1: ベンドの値",
+     "2: MIDIチャンネル"
+    ],
+    "outlets": [
+     "なし"
+    ],
+    "args": "標準で使うチャンネル",
+    "example": "自作のベンド操作UIの値を、外部音源にベンドメッセージとして送る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "touchin",
+    "summary": "MIDIのチャンネルアフタータッチ（鍵盤を弾いた後にさらに押し込む強さ）を受け取る",
+    "inlets": [
+     "なし"
+    ],
+    "outlets": [
+     "1: 押し込みの強さ",
+     "2: MIDIチャンネル"
+    ],
+    "args": "特定チャンネルだけに絞ることもできる",
+    "example": "鍵盤を押し込む強さを、フィルターのカットオフやビブラートの深さに割り当てる",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "touchout",
+    "summary": "MIDIのチャンネルアフタータッチを送る",
+    "inlets": [
+     "1: 押し込みの強さ",
+     "2: MIDIチャンネル"
+    ],
+    "outlets": [
+     "なし"
+    ],
+    "args": "標準で使うチャンネル",
+    "example": "自作したエンベロープの値を、アフタータッチとして外部音源に送る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "midiin",
+    "summary": "加工されていない生のMIDIデータを、1バイトずつそのまま受け取る。低レベルな処理が必要なときに使う",
+    "inlets": [
+     "なし"
+    ],
+    "outlets": [
+     "1: MIDIバイト（0〜255）を1バイトずつ"
+    ],
+    "args": "なし",
+    "example": "noteinなどでは扱いにくいSysExメッセージや特殊な規格を、自分でバイト単位から解析したいときに使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "midiout",
+    "summary": "加工されていない生のMIDIデータを、1バイトずつそのまま送る",
+    "inlets": [
+     "1: 送りたいMIDIバイト（1バイトずつ）"
+    ],
+    "outlets": [
+     "なし"
+    ],
+    "args": "なし",
+    "example": "自作のSysExメッセージをバイト単位で組み立てて送る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "midiparse",
+    "summary": "midiinで受け取った生のバイト列を、「ノートオン」「CC」のような意味のある単位に解釈し直す",
+    "inlets": [
+     "1: 生のMIDIバイト"
+    ],
+    "outlets": [
+     "ノート、CC、ベンドなど、メッセージの種類ごとに複数出力"
+    ],
+    "args": "なし",
+    "example": "[midiin] → [midiparse] で、低レベルな処理をしつつも種類ごとの仕分けは自動化する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "midiformat",
+    "summary": "「ノートオン」「CC」のような意味のある単位のMIDIデータを、生のバイト列に組み立て直す（midiparseの逆）",
+    "inlets": [
+     "ノート、CC、ベンドなど種類ごとに複数入力"
+    ],
+    "outlets": [
+     "1: 組み立てられた生のMIDIバイト"
+    ],
+    "args": "なし",
+    "example": "[midiformat] → [midiout] で、SysExを含む任意のMIDIメッセージを低レベルから組み立てて送る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "makenote",
+    "summary": "ノート番号とベロシティだけ渡せば、指定した長さ（ms）後に自動でノートオフまで作ってくれる、いわば「発音時間の自動管理係」",
+    "inlets": [
+     "1: ノート番号",
+     "2: ベロシティ",
+     "3: 音の長さ（ms）"
+    ],
+    "outlets": [
+     "1: ノート番号",
+     "2: ベロシティ（0も含む。つまりノートオンとノートオフの両方が出てくる）",
+     "3: MIDIチャンネル（引数指定時）"
+    ],
+    "args": "標準のベロシティ、長さ（ms）",
+    "example": "ステップシーケンサーで「音の長さ」を気にせずノートオンだけ送れば、決めた時間後に自動でノートオフも出るようにする",
+    "note": "ノートオフの管理を手作業でしなくて済む、非常によく使われる便利オブジェクト",
+    "uncertain": false
+   },
+   {
+    "name": "stripnote",
+    "summary": "ベロシティ0のノートオフを取り除き、ノートオンだけを通す",
+    "inlets": [
+     "1: ノート番号",
+     "2: ベロシティ"
+    ],
+    "outlets": [
+     "1: ノート番号（ノートオンのときだけ）"
+    ],
+    "args": "なし",
+    "example": "「弾いた瞬間」だけで発音する打楽器音源のように、ノートオフを気にしなくていい用途に使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "xnotein",
+    "summary": "notein の強化版。鍵盤を「離す速さ」（リリースベロシティ）まで受け取れる",
+    "inlets": [
+     "なし"
+    ],
+    "outlets": [
+     "1: ノート番号",
+     "2: ベロシティ（ノートオンは弾いた強さ、ノートオフは離した強さ）",
+     "3: 状態（1=ノートオン、0=ノートオフ）",
+     "4（チャンネル未指定時）: MIDIチャンネル"
+    ],
+    "args": "特定チャンネルだけに絞ることもできる",
+    "example": "鍵盤を離す速さまで音作りに反映したいとき、notein の代わりに使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "xnoteout",
+    "summary": "xnotein に対応する送信用オブジェクト。リリースベロシティを含めてノートオフを送れる",
+    "inlets": [
+     "1: ノート番号",
+     "2: ベロシティ",
+     "3: 状態",
+     "4: MIDIチャンネル"
+    ],
+    "outlets": [
+     "なし"
+    ],
+    "args": "標準で使うチャンネル",
+    "example": "リリースベロシティの情報を保ったまま、外部音源にノートオフを送る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "midiinfo",
+    "summary": "パソコンに繋がっているMIDI機器の一覧を取得する",
+    "inlets": [
+     "1: 問い合わせの命令"
+    ],
+    "outlets": [
+     "1: 機器名やポート情報のリスト"
+    ],
+    "args": "なし",
+    "example": "M4Lデバイスの中に、MIDIポートを選ぶメニュー（umenu）を自動で作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "borax",
+    "summary": "noteinから来るノートオン/オフの流れを見て、「今何音同時に押さえているか」などをまとめて教えてくれる",
+    "inlets": [
+     "1: ノート番号",
+     "2: ベロシティ"
+    ],
+    "outlets": [
+     "ノート番号、ベロシティ、和音の音数、発音中のノート数など、複数の解析結果"
+    ],
+    "args": "なし",
+    "example": "今押さえている鍵盤の数を数えて、単音とコードで違う音色に切り替える",
+    "note": "比較的古くからあるオブジェクトで、出力の細部は公式リファレンスでの確認が確実",
+    "uncertain": true
+   },
+   {
+    "name": "flush",
+    "summary": "makenote などでノートオンだけ送られてノートオフが送られず「音が鳴りっぱなし」になってしまった音を、まとめて強制的に止める",
+    "inlets": [
+     "1: bangで、今鳴っている全ての音にノートオフを送る"
+    ],
+    "outlets": [
+     "1: ノートオフ用のノート番号とベロシティ0"
+    ],
+    "args": "なし",
+    "example": "パッチの構造を変えたときにノートオフが正しく届かなくなり、音が止まらなくなる事故を防ぐ保険として使う",
+    "note": "",
+    "uncertain": false
+   }
+  ]
+ },
+ {
+  "category": "オーディオ基礎（MSP）",
+  "objects": [
+   {
+    "name": "cycle~",
+    "summary": "決めた周波数のサイン波を作る、いちばん基本のオシレーター（発振器）",
+    "inlets": [
+     "1（信号/float）: 周波数（Hz）。信号を送れば信号レートでFM変調もできる",
+     "2（float）: 波形の再生開始位置（0〜1）"
+    ],
+    "outlets": [
+     "1（信号）: サイン波"
+    ],
+    "args": "最初の周波数（Hz）、参照するウェーブテーブル名（省略時は内蔵のサイン波テーブル）",
+    "example": "[cycle~ 440] → [*~ 0.3] → [dac~ 1 2] で、440Hzのサイン波を音量0.3で左右のスピーカーから鳴らす",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "phasor~",
+    "summary": "0から1まで決めた周波数で繰り返し上がっていく、ノコギリ状の信号。他の波形やLFOの元ネタになる基礎波形",
+    "inlets": [
+     "1（信号/float）: 周波数（Hz。マイナスの値で逆回転）",
+     "2（float）: 再生開始位置（0〜1）"
+    ],
+    "outlets": [
+     "1（信号）: 0〜1のランプ波"
+    ],
+    "args": "最初の周波数",
+    "example": "[phasor~] の出力を波形テーブルの読み出し位置として使い、好きな波形のオシレーターを自作する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "tri~",
+    "summary": "三角波を作るオシレーター",
+    "inlets": [
+     "1（信号/float）: 周波数（Hz）",
+     "2（信号/float）: 波形の対称性（デューティ比）"
+    ],
+    "outlets": [
+     "1（信号）: 三角波"
+    ],
+    "args": "最初の周波数",
+    "example": "cycle~より倍音が多いので、LFOやオシレーターとして使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "saw~ / rect~",
+    "summary": "ノコギリ波（saw~）や矩形波（rect~）を作るオシレーター。折り返しノイズを抑えた、なめらかなバージョン",
+    "inlets": [
+     "1（信号/float）: 周波数（Hz）",
+     "2（信号/float）: 波形の形を決めるパラメータ（rect~のパルス幅など）"
+    ],
+    "outlets": [
+     "1（信号）: 波形出力"
+    ],
+    "args": "最初の周波数",
+    "example": "アナログシンセらしい、倍音の多い音色の元ネタとして使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "noise~",
+    "summary": "ホワイトノイズ（ザーッというランダムな信号）を作る",
+    "inlets": [
+     "なし"
+    ],
+    "outlets": [
+     "1（信号）: ホワイトノイズ"
+    ],
+    "args": "なし",
+    "example": "打楽器のアタック成分や、フィルターに通してピンクノイズっぽい質感を作る素材として使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "+~",
+    "summary": "2つの信号（または信号と数値）を足し算する",
+    "inlets": [
+     "1（信号）: 信号A",
+     "2（信号/float）: 信号Bまたは定数"
+    ],
+    "outlets": [
+     "1（信号）: 足し算の結果"
+    ],
+    "args": "右インレットの初期値（float）",
+    "example": "複数のオシレーターの音を混ぜ合わせて、加算合成の音色を作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "-~",
+    "summary": "2つの信号（または信号と数値）を引き算する",
+    "inlets": [
+     "1（信号）: 信号A",
+     "2（信号/float）: 信号Bまたは定数"
+    ],
+    "outlets": [
+     "1（信号）: 引き算の結果"
+    ],
+    "args": "右インレットの初期値",
+    "example": "信号に混ざった不要な直流分（DCオフセット）を除去したり、位相反転した信号との差を計算したりする",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "*~",
+    "summary": "2つの信号（または信号と数値）を掛け算する。音量調整・AM変調・エンベロープを掛けるときの基本",
+    "inlets": [
+     "1（信号）: 信号A",
+     "2（信号/float）: 信号Bまたは定数（音量値など）"
+    ],
+    "outlets": [
+     "1（信号）: 掛け算の結果"
+    ],
+    "args": "右インレットの初期値（0〜1のゲインなど）",
+    "example": "[cycle~] の出力と、[line~] で作ったエンベロープ信号を [*~] で掛け合わせて、音量の時間変化を作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "/~",
+    "summary": "2つの信号を割り算する",
+    "inlets": [
+     "1（信号）: 割られる信号",
+     "2（信号/float）: 割る信号または定数"
+    ],
+    "outlets": [
+     "1（信号）: 割り算の結果"
+    ],
+    "args": "右インレットの初期値",
+    "example": "特殊な正規化処理などで、まれに使われる",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "line~",
+    "summary": "「今の値から目標値まで、決めた時間をかけてなめらかに変化する」信号を作る。音量やパラメータをなめらかに変えたいときの定番",
+    "inlets": [
+     "1: \"目標値 到達までの時間(ms)\" の組み合わせ（複数区間を連続で指定することも可能）",
+     "2: 停止などの命令"
+    ],
+    "outlets": [
+     "1（信号）: 目標値へなめらかに変化していく信号"
+    ],
+    "args": "初期値",
+    "example": "[line~] に \"1 10 0 500\" と送ると、10msで音量1まで上がり、その後500msかけて0まで下がる、アタック＋リリースのエンベロープになる",
+    "note": "パラメータを急に変えるとプツッというノイズ（クリックノイズ）が出やすいので、それを防ぐスムージング用途でもよく使われる",
+    "uncertain": false
+   },
+   {
+    "name": "line",
+    "summary": "line~ のメッセージ版。数値を、決めた時間をかけて段階的に変化させる（信号ではなくfloat値として）",
+    "inlets": [
+     "1: \"目標値 時間(ms)\" の組み合わせ",
+     "2: 停止の命令"
+    ],
+    "outlets": [
+     "1: 段階的に変化するfloat値"
+    ],
+    "args": "初期値",
+    "example": "UIのノブの値を、アニメーションのようになめらかに動かす",
+    "note": "更新の細かさはMaxの内部スケジューラの周期に依存するため、line~ほど滑らかにはならない",
+    "uncertain": false
+   },
+   {
+    "name": "curve~",
+    "summary": "line~ と似ているが、直線ではなく指数的なカーブを描いて目標値まで変化する信号を作る",
+    "inlets": [
+     "1: \"目標値 時間(ms) カーブの曲がり具合\" の組み合わせ",
+     "2: 停止などの命令"
+    ],
+    "outlets": [
+     "1（信号）: カーブを描いて変化する信号"
+    ],
+    "args": "初期値",
+    "example": "人間の耳に自然に聞こえる、指数的な音量フェードやフィルターカットオフの変化を作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "sig~",
+    "summary": "float値やint値を、そのまま一定値の信号（オーディオレート）に変換する",
+    "inlets": [
+     "1: 変換したい値"
+    ],
+    "outlets": [
+     "1（信号）: 一定値の信号"
+    ],
+    "args": "初期値",
+    "example": "number boxの値をMSPオブジェクトの信号インレットに渡したいとき、[sig~] を挟んで信号化する",
+    "note": "急な値の変化はクリックノイズの原因になるので、必要に応じて line~ と組み合わせる",
+    "uncertain": false
+   },
+   {
+    "name": "snapshot~",
+    "summary": "信号の「今の値」を、決めた間隔でfloat値として取り出す。信号の世界からメッセージの世界への橋渡し役",
+    "inlets": [
+     "1（信号）: 見たい信号",
+     "2: 取り出す間隔（ms）を書き換える"
+    ],
+    "outlets": [
+     "1: 取り出されたfloat値"
+    ],
+    "args": "取り出す間隔（ms、省略時は自動）",
+    "example": "オーディオ信号のレベルメーターや、LFOの今の値をUI表示に反映する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "adc~",
+    "summary": "オーディオインターフェースの入力（マイクや外部音声）を信号として取り込む",
+    "inlets": [
+     "なし"
+    ],
+    "outlets": [
+     "引数の数だけ（各入力チャンネルに対応）"
+    ],
+    "args": "使う入力チャンネル番号",
+    "example": "マイク入力を [adc~ 1] で取り込み、エフェクトをかけてから [dac~] に送る",
+    "note": "M4Lデバイスでは通常 [plugin~] やLive側のオーディオルーティングを使うので、[adc~]/[dac~] を直接使うのはスタンドアロンのMaxパッチが中心",
+    "uncertain": false
+   },
+   {
+    "name": "dac~",
+    "summary": "信号をオーディオインターフェースの出力（スピーカー）に送る",
+    "inlets": [
+     "引数の数だけ（各出力チャンネルに対応）"
+    ],
+    "outlets": [
+     "なし"
+    ],
+    "args": "使う出力チャンネル番号",
+    "example": "[dac~ 1 2] で、信号をステレオのスピーカーから出力する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "gain~",
+    "summary": "スライダー型のUIを兼ねた音量調整オブジェクト。dB表示で直感的に音量を操作できる",
+    "inlets": [
+     "1（信号）: 入力信号"
+    ],
+    "outlets": [
+     "1（信号）: 音量調整後の信号"
+    ],
+    "args": "スライダーの表示範囲など",
+    "example": "ミキサーのフェーダーのように [gain~] を並べて、各トラックの音量バランスを調整する",
+    "note": "M4LのUIに見た目を合わせたいなら、[live.gain~] を使うのが一般的",
+    "uncertain": false
+   },
+   {
+    "name": "meter~",
+    "summary": "信号の大きさを、メーターのように光って見せてくれるUI",
+    "inlets": [
+     "1（信号）: 表示したい信号"
+    ],
+    "outlets": [
+     "1: 今のレベルの値（float、任意）"
+    ],
+    "args": "なし",
+    "example": "マスター出力に [meter~] を挿し、音が割れていないか目で確認する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "scope~",
+    "summary": "信号の波形を、オシロスコープのようにリアルタイムで描いてくれるUI",
+    "inlets": [
+     "1（信号）: 表示したい信号"
+    ],
+    "outlets": [
+     "なし"
+    ],
+    "args": "表示範囲、描き方など",
+    "example": "自作したオシレーターの波形が思った通りの形になっているか、目で見て確認する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "number~",
+    "summary": "信号の今の値を、数字でリアルタイム表示してくれるUI（number boxの信号版）",
+    "inlets": [
+     "1（信号）: 表示したい信号"
+    ],
+    "outlets": [
+     "1: 表示している値（float、任意）"
+    ],
+    "args": "なし",
+    "example": "エンベロープやLFOの今の値を数字で見ながらデバッグする",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "edge~",
+    "summary": "信号が「0」と「0以外」の間で切り替わった瞬間を見つけて、bangを出す",
+    "inlets": [
+     "1（信号）: 監視したい信号"
+    ],
+    "outlets": [
+     "1: 0→0以外に切り替わった瞬間にbang",
+     "2: 0以外→0に切り替わった瞬間にbang"
+    ],
+    "args": "なし",
+    "example": "信号レートで作ったゲート波形の「立ち上がり」「立ち下がり」を検出し、メッセージ側の処理につなげる",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "send~ / receive~",
+    "summary": "send/receiveのオーディオ信号版。パッチコードを引かずに、名前だけでオーディオ信号をやり取りする",
+    "inlets": [
+     "send~側 1（信号）: 送りたい信号"
+    ],
+    "outlets": [
+     "receive~側 1（信号）: 届いた信号"
+    ],
+    "args": "共有する名前",
+    "example": "サブパッチ同士や離れた場所どうしでオーディオ信号を配線なしで受け渡す（センドエフェクトのバス配線などに便利）",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "delay~",
+    "summary": "信号を「決めたサンプル数」だけ遅らせる、シンプルな固定ディレイ。tapin~/tapout~より軽量で、短い遅延向き",
+    "inlets": [
+     "1（信号）: 遅らせたい信号",
+     "2（信号/float）: 遅延時間"
+    ],
+    "outlets": [
+     "1（信号）: 遅延した信号"
+    ],
+    "args": "確保する最大の遅延量(サンプル数)、最初の遅延時間、値が変わったときのクロスフェード時間(ms)",
+    "example": "1サンプル単位の細かい遅延が必要なフィードバック回路やコムフィルターの自作に、tapin~/tapout~より軽い処理で使う",
+    "note": "時間はミリ秒表記(\"4n\"など)でも指定でき、ms・サンプルのどちらでも扱える",
+    "uncertain": false
+   },
+   {
+    "name": "abs~",
+    "summary": "信号のマイナスの値を、すべてプラスに変える(絶対値を取る)",
+    "inlets": [
+     "1（信号）: 入力信号"
+    ],
+    "outlets": [
+     "1（信号）: 絶対値を取った信号"
+    ],
+    "args": "なし",
+    "example": "audio信号のレベル検出(エンベロープフォロワー)の最初のステップとして、波形の下側を上側に折り返す",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "gate~",
+    "summary": "gateの信号(オーディオ)版。指定したアウトレットにだけ音声信号を流し、それ以外のアウトレットには無音(0の信号)を出す",
+    "inlets": [
+     "1（左）: どのアウトレットを開けるか(0で全部閉じる)",
+     "2（信号）: 流したい音声信号"
+    ],
+    "outlets": [
+     "引数で決めた数だけできる。開いているアウトレットにだけ信号が出る"
+    ],
+    "args": "アウトレットの数、最初に開けておくアウトレット番号",
+    "example": "複数のエフェクトチェインを用意し、[gate~ 3] で今どのチェインに音を送るかをその場で切り替える",
+    "note": "ramptimeアトリビュートを使うと、切り替え時のプツッというノイズを防ぐクロスフェードができる。メッセージ版のgateとは違い、閉じている側は「無音の信号」を出し続ける",
+    "uncertain": false
+   },
+   {
+    "name": "selector~",
+    "summary": "switchの信号(オーディオ)版。複数ある信号の入力のうち、選んだものだけを1つのアウトレットに通す",
+    "inlets": [
+     "1（左）: どの入力を選ぶか(0で全部オフ)",
+     "2〜: 選択される音声信号の入力"
+    ],
+    "outlets": [
+     "1（信号）: 選ばれている入力の信号(選ばれていなければ無音)"
+    ],
+    "args": "入力の数、最初に選ぶ入力番号",
+    "example": "複数のオシレーターやサンプルプレーヤーを [selector~ 3] につなぎ、その場でどれを鳴らすか切り替える",
+    "note": "gate~とは逆で、こちらは複数の入口から1つの出口を選ぶ役割",
+    "uncertain": false
+   },
+   {
+    "name": "matrix~",
+    "summary": "複数の信号入力を、それぞれ好きな音量で好きなアウトレットに振り分けられる、信号用の配線マトリクス(音声用のパッチベイのようなもの)",
+    "inlets": [
+     "1: 経路や音量を設定する命令(\"connect\"など)",
+     "2〜: 音声信号の入力"
+    ],
+    "outlets": [
+     "引数で決めた数だけできる。設定した経路・音量でミックスされた信号が出る"
+    ],
+    "args": "入力数、出力数、デフォルトのゲイン量",
+    "example": "複数のシンセの出力を[matrix~ 4 2]につなぎ、送るリバーブ・ディレイの量をその場で自由に変えられるセンド用のルーティングを組む",
+    "note": "同じアウトレットに複数の入力をつなぐと自動的に足し合わされる(ミックスされる)。ramptimeを設定すると、音量を変えたときのプツッというノイズを防げる",
+    "uncertain": false
+   },
+   {
+    "name": "mstosamps~",
+    "summary": "ミリ秒(ms)の時間を、今のサンプリングレートでの「サンプル数」に変換する",
+    "inlets": [
+     "1（信号/float）: 変換したいミリ秒の値"
+    ],
+    "outlets": [
+     "1（信号）: サンプル数(信号)",
+     "2: サンプル数(float/int)"
+    ],
+    "args": "なし",
+    "example": "ディレイタイムをmsで指定してから[mstosamps~]で変換し、tapin~/tapout~やdelay~のサンプル数指定に正確に合わせる",
+    "note": "結果は小数になることもある(例: 44.1kHzで3.2msは141.12サンプル)。サンプリングレートが変わっても常に正しい変換をしてくれる",
+    "uncertain": false
+   },
+   {
+    "name": "sampstoms~",
+    "summary": "「サンプル数」を、今のサンプリングレートでのミリ秒(ms)に変換する。mstosamps~の逆",
+    "inlets": [
+     "1（信号/float）: 変換したいサンプル数"
+    ],
+    "outlets": [
+     "1（信号）: ミリ秒(信号)",
+     "2: ミリ秒(float)"
+    ],
+    "args": "なし",
+    "example": "buffer~やdelay~内部のサンプル単位の位置を、UI表示用に分かりやすいミリ秒表記に変換する",
+    "note": "",
+    "uncertain": false
+   }
+  ]
+ },
+ {
+  "category": "オーディオ加工・エフェクト",
+  "objects": [
+   {
+    "name": "biquad~",
+    "summary": "係数を自分で指定して、好きな特性のフィルターを組める、フィルターの素材そのもの。汎用性は高いが上級者向け",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2〜: フィルター係数（a0,a1,a2,b1,b2など）"
+    ],
+    "outlets": [
+     "1（信号）: フィルター処理後の信号"
+    ],
+    "args": "最初の係数",
+    "example": "[filtergraph~] で見た目で作ったフィルター特性の係数を [biquad~] に渡して、実際の音の処理を行う、という組み合わせが定番",
+    "note": "係数を自分で計算するには信号処理の知識が必要",
+    "uncertain": false
+   },
+   {
+    "name": "filtergraph~",
+    "summary": "フィルターの効き方（周波数特性）を、グラフをドラッグして目で見ながらデザインできるUI",
+    "inlets": [
+     "1: フィルターの種類やパラメータの設定"
+    ],
+    "outlets": [
+     "1: biquad~などに渡すためのフィルター係数"
+    ],
+    "args": "フィルターの種類（ローパス、ハイパス、ピーキングEQなど）",
+    "example": "[filtergraph~] でEQの効き方を見ながら調整し、その係数を [biquad~] に流し込んでリアルタイムに音を加工する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "filterdesign",
+    "summary": "「こういうフィルターが欲しい」という設計条件（種類・カットオフ周波数・次数など）から、実際のフィルター係数の辞書（dictionary）を計算して出力するオブジェクト。音は出さず、係数だけを作る「設計図係」",
+    "inlets": [
+     "1: bangを送ると、現在の設定内容でフィルター係数を計算して出力する"
+    ],
+    "outlets": [
+     "1: 計算結果のフィルター係数（dictionary）。@nameで付けた名前に紐づく"
+    ],
+    "args": "@response（lowpass/highpass/bandpass/bandstopなどフィルターの種類）、@frequency（カットオフ周波数。bandpass/bandstopは2つ指定）、@order（次数）、@topology（butterworth/chebyshev-1/chebyshev-2などの設計方式）、@samplerate、@units（hertz/normalized/radians）、@name（出力する辞書の名前）など、多数のアトリビュートで設計条件を指定する",
+    "example": "[filterdesign @response lowpass @frequency 1000 @order 4] にbangを送って係数を計算し、その出力を [cascade~] や [filtergraph~] に渡して実際の音声フィルタリングを行う、という組み合わせで使う",
+    "note": "biquad~/lores~/svf~のような「音を通すと同時にフィルターがかかる」オブジェクトとは違い、filterdesign自体は音声信号を扱わない。設計だけを担当し、実際の処理はcascade~やzplane~に任せる、という役割分担",
+    "uncertain": true
+   },
+   {
+    "name": "cascade~",
+    "summary": "複数のbiquadフィルターを直列につないで一気に処理してくれる、多段フィルター専用のオブジェクト。filterdesignで設計した複雑なフィルターを実際に鳴らす担当",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2: フィルター係数のリスト、またはfilterdesignからの\"dictionary\"メッセージ"
+    ],
+    "outlets": [
+     "1（信号）: フィルター処理後の信号"
+    ],
+    "args": "なし（@varnameなど、見た目・スクリプト用の共通アトリビュートのみ）",
+    "example": "[filterdesign @response lowpass @order 4] の出力を [cascade~] に\"dictionary\"メッセージとして送り、設計した通りのローパスフィルターを実際の音に適用する",
+    "note": "\"bypass\"でフィルターを迂回、\"clear\"で内部状態をリセット、\"zero\"で出力を無音にできる。1個のbiquad~では組みにくい高次のフィルターを、複数段まとめて簡単に組める",
+    "uncertain": false
+   },
+   {
+    "name": "zplane~",
+    "summary": "フィルター係数を、極（ポール）と零点（ゼロ）というグラフ上の点として表示・編集するための可視化オブジェクト。音は処理せず、見た目でフィルター設計を確認・調整するための道具",
+    "inlets": [
+     "1: フィルター係数のリスト、またはdictionaryの参照",
+     "2〜5: 個別の係数（a1,a2,b1,b2など）"
+    ],
+    "outlets": [
+     "1: フィルター係数",
+     "2: 零点の位置",
+     "3: 極の位置",
+     "4: 全体のゲイン"
+    ],
+    "args": "なし",
+    "example": "filterdesignやfiltergraph~で作ったフィルターの特性を、極と零点の配置としてグラフで確認しながら微調整する",
+    "note": "cascade~やbiquad~のように実際に音声を処理するオブジェクトではなく、あくまで設計・確認用の表示ツール",
+    "uncertain": true
+   },
+   {
+    "name": "onepole~",
+    "summary": "シンプルな1次のローパス/ハイパスフィルター。軽くて、値のスムージングにもよく使われる",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（信号/float）: カットオフの効き具合"
+    ],
+    "outlets": [
+     "1（信号）: フィルター処理後の信号"
+    ],
+    "args": "最初の係数",
+    "example": "パラメータが急に変化するのを、信号レートでなめらかにする簡易スムージングとして使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "reson~",
+    "summary": "特定の周波数だけを強調する、共鳴（バンドパス的な）フィルター",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（信号/float）: 中心の周波数",
+     "3（信号/float）: 共鳴の鋭さ（Q値）"
+    ],
+    "outlets": [
+     "1（信号）: フィルター処理後の信号"
+    ],
+    "args": "音量、中心周波数、Q値",
+    "example": "ノイズに [reson~] をかけて、ある音の高さで共鳴する、ボーカルの声のような質感を作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "lores~",
+    "summary": "共鳴（レゾナンス）を強くかけられるローパスフィルター。アナログシンセらしい太いフィルターサウンドの定番",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（信号/float）: カットオフ周波数",
+     "3（信号/float）: レゾナンスの量"
+    ],
+    "outlets": [
+     "1（信号）: フィルター処理後の信号"
+    ],
+    "args": "最初のカットオフ、レゾナンス",
+    "example": "ノコギリ波に [lores~] をかけ、カットオフを [line~] で動かして、シンセらしいワウやフィルタースイープを作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "svf~",
+    "summary": "ローパス・ハイパス・バンドパスを同時に、または切り替えて取り出せる万能フィルター（ステートバリアブルフィルター）",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（信号/float）: カットオフ周波数",
+     "3（信号/float）: Q値"
+    ],
+    "outlets": [
+     "1（信号）: ローパス出力",
+     "2（信号）: バンドパス出力",
+     "3（信号）: ハイパス出力"
+    ],
+    "args": "最初のカットオフ、Q値",
+    "example": "1個のフィルターから複数の特性を同時に取り出したい、マルチモードフィルターとして使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "comb~",
+    "summary": "短い遅延と帰還（フィードバック）を組み合わせた、金属的な質感や簡易的な共鳴を作るコムフィルター",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（信号/float）: 遅延時間",
+     "3（float）: フィードバック量"
+    ],
+    "outlets": [
+     "1（信号）: 処理後の信号"
+    ],
+    "args": "確保する最大遅延時間、最初の遅延時間、フィードバック量",
+    "example": "遅延時間を [line~] でゆっくり動かして、フランジャーのような効果を作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "allpass~",
+    "summary": "音量バランスは変えずに位相だけを変化させる、オールパスフィルター。リバーブの材料としてよく使われる",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（信号/float）: 遅延時間",
+     "3（float）: フィードバック量"
+    ],
+    "outlets": [
+     "1（信号）: 処理後の信号"
+    ],
+    "args": "確保する最大遅延時間、最初の遅延時間、フィードバック量",
+    "example": "comb~と組み合わせて、自作のシンプルなリバーブを作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "tapin~ / tapout~",
+    "summary": "ペアで使うディレイライン。tapin~で信号をためておき、tapout~で「何ミリ秒前の信号か」を指定して読み出す",
+    "inlets": [
+     "tapin~ 1（信号）: ためたい信号",
+     "tapout~ 1（信号/float）: 読み出す遅延時間（ms）"
+    ],
+    "outlets": [
+     "tapout~ 1（信号）: 遅延した信号"
+    ],
+    "args": "tapin~: 確保しておく最大の遅延時間（ms）",
+    "example": "[tapin~ 2000] → [tapout~] で最大2秒までの自由な時間のディレイを自作し、複数の tapout~ を使えば時間差の違うマルチタップディレイも作れる",
+    "note": "似た働きをする delay~ という単体オブジェクトもあるが、複数のタップや時間を自由に変えたい場合は tapin~/tapout~ の組み合わせが一般的",
+    "uncertain": false
+   },
+   {
+    "name": "freqshift~",
+    "summary": "音の周波数を全部まとめて一定量だけずらす。ピッチシフトと違って倍音の関係が崩れ、金属的・無機質な音色になる",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（信号/float）: ずらす量（Hz）"
+    ],
+    "outlets": [
+     "1（信号）: 処理後の信号"
+    ],
+    "args": "最初のずらす量",
+    "example": "リング変調に似た、ベルのような無機質な音色変化を作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "pitchshift~",
+    "summary": "音の長さ（テンポ）を変えずに音の高さだけを変える、または高さを保ったまま時間を伸び縮みさせる",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（float）: 音程を変える量（半音単位など）"
+    ],
+    "outlets": [
+     "1（信号）: 処理後の信号"
+    ],
+    "args": "最初のシフト量、処理の粒度（グレインサイズ）など",
+    "example": "ボーカルサンプルの音程だけを変えて、ハーモニーを作る",
+    "note": "アルゴリズムの詳細や処理の遅れ（レイテンシー）はバージョンによって差がある可能性があり、正確な仕様は公式リファレンスの確認が確実",
+    "uncertain": true
+   },
+   {
+    "name": "overdrive~",
+    "summary": "信号を歪ませる（波形を潰す）ディストーション系のオブジェクト",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（float）: 歪みの量"
+    ],
+    "outlets": [
+     "1（信号）: 歪んだ信号"
+    ],
+    "args": "最初の歪み量",
+    "example": "クリーンなシンセ音に軽くかけて、アナログ的な温かみや倍音を足す",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "degrade~",
+    "summary": "サンプリングレートやビット深度をわざと下げて、ローファイ・ビットクラッシャー的な質感を作る",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（float）: サンプルレートをどれだけ落とすか",
+     "3（float）: ビット深度をどれだけ落とすか"
+    ],
+    "outlets": [
+     "1（信号）: 劣化させた信号"
+    ],
+    "args": "最初のサンプルレート・ビット深度の設定",
+    "example": "レトロなゲーム機やローファイヒップホップのような、ザラついた質感を加える",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "rate~",
+    "summary": "信号を読み出す速さそのものを変えて、音程と再生速度を同時に変化させる",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（信号/float）: 再生速度の倍率"
+    ],
+    "outlets": [
+     "1（信号）: 処理後の信号"
+    ],
+    "args": "最初の速度倍率",
+    "example": "テープの回転数を変えたときのような、音程と速度が一緒に変わる効果を作る",
+    "note": "",
+    "uncertain": true
+   },
+   {
+    "name": "gigaverb~",
+    "summary": "Maxに標準で入っているアルゴリズムリバーブ。部屋の広さや反射の質感を調整できる",
+    "inlets": [
+     "1（信号）: 左の入力",
+     "2（信号）: 右の入力",
+     "3（float）: ドライ/ウェットなど各種パラメータ"
+    ],
+    "outlets": [
+     "1（信号）: 左の出力",
+     "2（信号）: 右の出力"
+    ],
+    "args": "最初のパラメータ（部屋の広さ、残響時間など）",
+    "example": "ドラムやボーカルに空間の広がりを加える",
+    "note": "各インレットへの細かいパラメータの割り当ては、ヘルプパッチでの確認が確実",
+    "uncertain": true
+   },
+   {
+    "name": "teeth~",
+    "summary": "多数の遅延を組み合わせ、櫛の歯（teeth）のような独特な周波数特性を作るフィルターの一種",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（float）: パラメータ"
+    ],
+    "outlets": [
+     "1（信号）: 処理後の信号"
+    ],
+    "args": "最初のパラメータ",
+    "example": "特殊な金属的レゾナンスや、フランジャーの変わり種として使う",
+    "note": "使う頻度は低め。詳しい仕様は要確認",
+    "uncertain": true
+   },
+   {
+    "name": "clip~",
+    "summary": "信号の値を、決めた上限・下限の範囲に収める信号版のclip。音割れ防止のリミッター代わりにも使える",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（信号/float）: 下限",
+     "3（信号/float）: 上限"
+    ],
+    "outlets": [
+     "1（信号）: 範囲内に収められた信号"
+    ],
+    "args": "下限、上限(省略時は両方0)",
+    "example": "歪みすぎたエフェクトの出力を [clip~ -1 1] に通し、それ以上音量が突き抜けないように安全弁として使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "slide~",
+    "summary": "値が急に変化しても、指数的になめらかに追いつくように加工する信号処理。エンベロープフォロワーや簡易的なローパスに使われる",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（float）: 値が上がるときの追いつく速さ",
+     "3（float）: 値が下がるときの追いつく速さ"
+    ],
+    "outlets": [
+     "1（信号）: なめらかになった信号"
+    ],
+    "args": "上がるときの速さ、下がるときの速さ(値が大きいほどゆっくり追いつく)",
+    "example": "音量の急な変化をなめらかにしてオートメーション的なゲイン変化に使ったり、[abs~] と組み合わせてエンベロープフォロワーを自作する",
+    "note": "上がる速さと下がる速さを別々に設定できるので、アタックは速く・リリースはゆっくり、のような非対称な動きも作れる",
+    "uncertain": false
+   },
+   {
+    "name": "rampsmooth~",
+    "summary": "値の変化を、決めたサンプル数をかけて直線的になめらかにする。slide~の直線バージョン",
+    "inlets": [
+     "1（信号）: 入力信号",
+     "2（float）: 値が上がるときのサンプル数",
+     "3（float）: 値が下がるときのサンプル数"
+    ],
+    "outlets": [
+     "1（信号）: なめらかになった信号"
+    ],
+    "args": "上がるときのサンプル数、下がるときのサンプル数",
+    "example": "パラメータの急変化によるクリックノイズを防ぐスムージングに、line~より軽い処理で使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "cos~",
+    "summary": "入力された値(0〜1を1周期とする位相)のコサインを計算する信号処理",
+    "inlets": [
+     "1（信号）: 位相(0〜1)"
+    ],
+    "outlets": [
+     "1（信号）: コサインの値"
+    ],
+    "args": "なし",
+    "example": "位相を自分で計算するアルゴリズム作曲やウェーブシェイピングで、コサインカーブが必要なときに使う",
+    "note": "Maxには sin~ という単体オブジェクトは存在しない。ふつうにサイン波が欲しいだけなら [cycle~] を使う方が効率的",
+    "uncertain": false
+   },
+   {
+    "name": "atan~",
+    "summary": "信号の各サンプルに対して、逆正接(アークタンジェント)を計算する",
+    "inlets": [
+     "1（信号）: 入力信号"
+    ],
+    "outlets": [
+     "1（信号）: 逆正接の値"
+    ],
+    "args": "なし",
+    "example": "波形を滑らかに歪ませるソフトクリッピング的なウェーブシェイピングに使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "atan2~",
+    "summary": "2つの信号(y, x)から逆正接を計算する、二変数版のatan",
+    "inlets": [
+     "1（信号）: y の値",
+     "2（信号）: x の値"
+    ],
+    "outlets": [
+     "1（信号）: 逆正接の値"
+    ],
+    "args": "なし",
+    "example": "XY座標の信号から角度を求めたいときに使う",
+    "note": "",
+    "uncertain": false
+   }
+  ]
+ },
+ {
+  "category": "サンプリング・バッファ",
+  "objects": [
+   {
+    "name": "buffer~",
+    "summary": "音のサンプルをメモリに読み込んで、他のオブジェクトからいつでも参照できる状態にする。M4Lでサンプルを鳴らす仕組みの中心",
+    "inlets": [
+     "1: ファイルの読み込みやサイズ変更などの命令"
+    ],
+    "outlets": [
+     "1: 読み込みが終わったなどの通知"
+    ],
+    "args": "バッファ名、読み込みたい音声ファイル名（省略可）、確保する長さ（ms）",
+    "example": "[buffer~ mysample loop.wav] で読み込んだサンプルを、同じ名前を参照する [groove~ mysample] や [play~ mysample] から鳴らす",
+    "note": "1つのbuffer~を複数の再生オブジェクトから同時に参照できるので、メモリを節約しながらサンプルを使い回せる",
+    "uncertain": false
+   },
+   {
+    "name": "groove~",
+    "summary": "buffer~の中身を、ループ再生に向いた形で読み出す、速度を自由に変えられるサンプルプレーヤー",
+    "inlets": [
+     "1（信号/float）: 再生速度（1が等速、マイナスで逆再生）",
+     "2: ループ範囲や再生開始位置などの命令"
+    ],
+    "outlets": [
+     "1（信号）: 再生された音",
+     "2: ループ位置などの情報"
+    ],
+    "args": "参照するbuffer~の名前",
+    "example": "ドラムループを [groove~] でテンポに合わせて伸縮させながらループ再生する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "play~",
+    "summary": "buffer~の中身を、決めた開始・終了位置から1回だけ再生する、シンプルなサンプルプレーヤー",
+    "inlets": [
+     "1（信号/float）: 再生位置（ms）や再生開始の命令"
+    ],
+    "outlets": [
+     "1（信号）: 再生された音"
+    ],
+    "args": "参照するbuffer~の名前",
+    "example": "ワンショットのドラムサンプルを、トリガーのたびに頭から再生する",
+    "note": "ループ再生や速度変化をしたいなら groove~ の方が向いている",
+    "uncertain": false
+   },
+   {
+    "name": "record~",
+    "summary": "音の信号を、リアルタイムでbuffer~に録音する",
+    "inlets": [
+     "1（信号）: 録音したい信号",
+     "2: 録音の開始/停止の命令"
+    ],
+    "outlets": [
+     "1: 録音位置などの情報"
+    ],
+    "args": "書き込み先のbuffer~名",
+    "example": "その場で入ってきた音を [record~] で録音し、すぐに [groove~] でループ再生する、簡単なルーパーを作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "wave~",
+    "summary": "buffer~の中身を、周波数を指定して波形テーブルのように読み出す、オシレーター的なプレーヤー",
+    "inlets": [
+     "1（信号/float）: 再生する周波数（Hz）"
+    ],
+    "outlets": [
+     "1（信号）: 再生された音"
+    ],
+    "args": "参照するbuffer~の名前",
+    "example": "buffer~に取り込んだ1周期ぶんの波形を、[wave~] で好きな音程のオシレーターとして鳴らす",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "index~",
+    "summary": "buffer~の中身を、サンプル番号を直接指定して読み出す",
+    "inlets": [
+     "1（信号/float）: 読み出したいサンプルの番号"
+    ],
+    "outlets": [
+     "1（信号）: そのサンプル位置の値"
+    ],
+    "args": "参照するbuffer~の名前",
+    "example": "phasor~と組み合わせて、自作のウェーブテーブルオシレーターの「読み出し部分」として使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "peek~",
+    "summary": "buffer~の好きなサンプル位置を、直接読み書きできる低レベルなオブジェクト",
+    "inlets": [
+     "1（信号）: 書き込む値（書き込みモード時）",
+     "2（信号/float）: 書き込む・読み出す位置"
+    ],
+    "outlets": [
+     "1（信号）: 読み出した値"
+    ],
+    "args": "参照するbuffer~の名前、読み書きモード",
+    "example": "グラニュラー合成やウェーブテーブルの自作編集など、サンプル1個単位の細かい読み書きが必要なときに使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "poke~",
+    "summary": "buffer~の指定した位置に、値を書き込む専用のオブジェクト",
+    "inlets": [
+     "1（信号）: 書き込みたい値",
+     "2（信号/float）: 書き込む位置"
+    ],
+    "outlets": [
+     "なし"
+    ],
+    "args": "書き込み先のbuffer~名",
+    "example": "計算で作った波形データを、buffer~に直接書き込んでカスタム波形テーブルを作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "sfplay~",
+    "summary": "buffer~を経由せず、ディスク上の音声ファイルを直接ストリーミング再生する。長い曲向け",
+    "inlets": [
+     "1: 再生開始/停止などの命令"
+    ],
+    "outlets": [
+     "引数の数だけ（チャンネル分の信号出力）"
+    ],
+    "args": "出力チャンネル数",
+    "example": "メモリに載せきれない長時間のBGMファイルを、ストリーミングで再生する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "sfrecord~",
+    "summary": "音の信号を、直接ディスク上のファイルにストリーミング録音する。長時間録音向け",
+    "inlets": [
+     "引数の数だけ（信号入力）、その他制御用の命令"
+    ],
+    "outlets": [
+     "1: 録音状態の通知"
+    ],
+    "args": "入力チャンネル数",
+    "example": "長時間のライブパフォーマンスを、メモリの容量を気にせずファイルに直接録音する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "waveform~",
+    "summary": "buffer~の波形を絵として表示し、マウスで再生位置やループ範囲を選べるUI",
+    "inlets": [
+     "1: 表示や選択範囲の設定の命令"
+    ],
+    "outlets": [
+     "1: 選んだ範囲やクリック位置の情報"
+    ],
+    "args": "参照するbuffer~の名前",
+    "example": "サンプラーデバイスで、波形を見ながらループポイントをドラッグで決めさせるUIを作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "sfinfo~",
+    "summary": "音声ファイルの詳細情報(チャンネル数・サンプルレート・長さなど)を調べる",
+    "inlets": [
+     "1: bang、open、getnamed などファイルを指定・分析させる命令"
+    ],
+    "outlets": [
+     "1: チャンネル数",
+     "2: サンプルサイズ(ビット数)",
+     "3: サンプルレート",
+     "4: 長さ(ms)",
+     "5: サンプル形式",
+     "6: ファイル名"
+    ],
+    "args": "調べたい音声ファイル名(省略可)",
+    "example": "サンプラーデバイスに読み込むファイルの長さやサンプルレートを事前にチェックし、想定外のフォーマットに対応する",
+    "note": "",
+    "uncertain": false
+   }
+  ]
+ },
+ {
+  "category": "標準UIオブジェクト",
+  "objects": [
+   {
+    "name": "toggle",
+    "summary": "クリックするたびに0と1が切り替わる、チェックボックスのようなスイッチ",
+    "inlets": [
+     "1: 0/1を送ると直接その状態にする、bangを送ると今の状態を反転させる"
+    ],
+    "outlets": [
+     "1: 今の状態（0または1）"
+    ],
+    "args": "なし",
+    "example": "エフェクトのオン/オフや、[metro]のスタート/ストップの切り替えに使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "button（bang）",
+    "summary": "クリックすると一瞬光って、bangを1回出すボタン",
+    "inlets": [
+     "1: 何を送ってもbangを出す（光って見える）"
+    ],
+    "outlets": [
+     "1: bang"
+    ],
+    "args": "なし",
+    "example": "ワンショットのトリガーボタンとして、サンプル再生や処理の実行に使う",
+    "note": "パレット上では「Bang」という名前で表示されるが、オブジェクト名として打ち込むときは [button] と入力する",
+    "uncertain": false
+   },
+   {
+    "name": "number（intボックス）",
+    "summary": "整数を表示・入力できるボックス",
+    "inlets": [
+     "1: 値を送ると表示を更新、bangで今の値を再出力"
+    ],
+    "outlets": [
+     "1: 表示している整数値"
+    ],
+    "args": "なし",
+    "example": "MIDIノート番号やCC値など、整数で扱いたい値の表示・手入力に使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "flonum（floatボックス）",
+    "summary": "小数を表示・入力できるボックス",
+    "inlets": [
+     "1: 値を送ると表示を更新、bangで今の値を再出力"
+    ],
+    "outlets": [
+     "1: 表示している小数値"
+    ],
+    "args": "なし",
+    "example": "周波数やゲインなど、細かい精度が必要な値の表示・手入力に使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "message（メッセージボックス）",
+    "summary": "クリックすると、中に書いてある内容をそのまま送り出す、パッチングでいちばんよく使う部品",
+    "inlets": [
+     "1: bangやクリックで内容を送る。\"$1\" のような書き方をしておけば、送られてきた値をその場所に当てはめられる"
+    ],
+    "outlets": [
+     "1: 書かれている内容"
+    ],
+    "args": "送りたい内容そのもの（ボックスの中に直接書く）",
+    "example": "[440(] というメッセージボックスをクリックして、オシレーターの周波数を固定値にセットする。\"set $1\" のように書けば、動的な値も組み込める",
+    "note": "厳密には「オブジェクト」ではなくMaxの基本パーツの1つだが、パッチングに欠かせないのでこの辞書にも載せている",
+    "uncertain": false
+   },
+   {
+    "name": "slider（vslider / hslider）",
+    "summary": "指でドラッグして値を連続的に動かせる、縦型（vslider）・横型（hslider）のスライダー",
+    "inlets": [
+     "1: 値を送るとつまみの位置を更新、bangで今の値を再出力"
+    ],
+    "outlets": [
+     "1: 今の値"
+    ],
+    "args": "なし（値の範囲はインスペクタで設定する）",
+    "example": "音量やパンなど、ドラッグで直感的に調整したいパラメータのフェーダーとして使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "dial（knob）",
+    "summary": "ドラッグして回すように値を変える、回転ノブ型のUI",
+    "inlets": [
+     "1: 値を送るとノブの位置を更新、bangで今の値を再出力"
+    ],
+    "outlets": [
+     "1: 今の値"
+    ],
+    "args": "なし（範囲はインスペクタで設定する）",
+    "example": "シンセのカットオフやレゾナンスなど、実機のツマミに近い操作感で動かしたいパラメータに使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "rslider",
+    "summary": "最小値と最大値の「範囲」を、1つのUIでドラッグして決められるスライダー",
+    "inlets": [
+     "1: 範囲を送ると表示を更新"
+    ],
+    "outlets": [
+     "1: [最小値, 最大値] のリスト"
+    ],
+    "args": "なし",
+    "example": "ランダムに鳴らす音域の上限・下限を、1つのUIでまとめて決める",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "multislider",
+    "summary": "たくさんのスライダー（棒グラフ）をまとめて表示・操作できるUI。ステップシーケンサーのパターン表示によく使われる",
+    "inlets": [
+     "1: リストで全部の棒の値を一括セット。\"fetch\"や\"set\"、\"setstyle\"などのメッセージもここに送る"
+    ],
+    "outlets": [
+     "1（左）: マウス操作やリスト入力があったときの、全部の棒の値をまとめたリスト",
+     "2（右）: \"fetch 番号\"で指定した1本だけの値や、\"maximum\"/\"minimum\"/\"sum\"などの計算結果"
+    ],
+    "args": "棒の本数",
+    "example": "16ステップのベロシティパターンを [multislider] 1個で見た目に分かりやすく表示・編集し、シーケンサーが今のステップ番号を \"fetch 5\" のように送ることで、5番目の棒（ステップ）の値だけを取り出して音源に渡す",
+    "note": "\"fetch 番号\"を送ると、その番号のスライダー1本分の値だけを右アウトレットから出力できる（番号は1から始まる）。ステップシーケンサーで「今のステップの値だけ」を読みたいときによく使う。値を出力せずにセットしたいときは\"set\"/\"setlist\"、見た目（棒グラフ、ドット、線など）を切り替えたいときは\"setstyle\"、範囲を変えたいときは\"setminmax\"などのメッセージも使える",
+    "uncertain": false
+   },
+   {
+    "name": "umenu",
+    "summary": "クリックするとリストから1つ選べる、ドロップダウンメニュー",
+    "inlets": [
+     "1: 選択肢のリストの設定や、選ぶ番号の指定"
+    ],
+    "outlets": [
+     "1: 選ばれた項目の番号",
+     "2: 選ばれた項目の文字"
+    ],
+    "args": "最初の選択肢のリスト",
+    "example": "オーディオデバイスの一覧やプリセット名の一覧から1つを選ばせるUIに使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "matrixctrl",
+    "summary": "格子状のマス目をクリックしてオン/オフを切り替えられる、マトリクス型のUI",
+    "inlets": [
+     "1: マス目の状態を一括で設定する命令"
+    ],
+    "outlets": [
+     "1: クリックされたマスの座標と状態"
+    ],
+    "args": "行数、列数",
+    "example": "ステップシーケンサーで、「どの行（音程）のどの列（ステップ）を鳴らすか」を格子状に見えるように配置する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "panel",
+    "summary": "背景色や角の丸みを設定できる、見た目を整えるための四角いパネル",
+    "inlets": [
+     "なし"
+    ],
+    "outlets": [
+     "なし"
+    ],
+    "args": "なし",
+    "example": "複数のノブをグループとしてまとめて見せるための背景として使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "comment",
+    "summary": "パッチの中に説明文を書いておくための注釈テキスト",
+    "inlets": [
+     "なし"
+    ],
+    "outlets": [
+     "なし"
+    ],
+    "args": "表示したい文章",
+    "example": "パッチの各部分に「オシレーター部」「フィルター部」のようなラベルを付けて、見やすくする",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "fpic",
+    "summary": "画像ファイル（PNGなど）をパッチの中に表示するUI",
+    "inlets": [
+     "1: 表示する画像を切り替える命令"
+    ],
+    "outlets": [
+     "1: クリック位置などの情報（任意）"
+    ],
+    "args": "表示する画像ファイル名",
+    "example": "デバイスのロゴや、独自デザインの背景画像を表示する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "textbutton",
+    "summary": "文字が表示できるボタン。クリックするとメッセージを出す",
+    "inlets": [
+     "1: 表示する文字を書き換える"
+    ],
+    "outlets": [
+     "1: クリックしたときにbangや指定したメッセージ"
+    ],
+    "args": "表示する文字",
+    "example": "\"再生\" \"停止\" のように、文字で内容が分かるボタンをトランスポート操作に使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "swatch",
+    "summary": "色を選べるカラーピッカーUI。選んだ色をRGBAの値として出す",
+    "inlets": [
+     "1: 色の初期値を設定"
+    ],
+    "outlets": [
+     "1: 選ばれた色（RGBAの値のリスト）"
+    ],
+    "args": "最初の色",
+    "example": "jsuiで描くカスタムUIの色を、ユーザーに選んでもらう",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "attrui",
+    "summary": "つないだオブジェクトの「アトリビュート(細かい設定項目)」を、メニューから選んで表示・変更できるUI",
+    "inlets": [
+     "1: 値の設定など"
+    ],
+    "outlets": [
+     "1: 変更した値"
+    ],
+    "args": "なし",
+    "example": "自作のjsuiやカスタムオブジェクトが持つ色・サイズなどの設定項目を、パッチを組まずにUIから直接いじれるようにする",
+    "note": "parameter_enable を有効にすると、M4Lのパラメータやpattrstorageとも連携できる",
+    "uncertain": false
+   },
+   {
+    "name": "dropfile",
+    "summary": "ファイルをドラッグ＆ドロップできる領域を作り、ドロップされたファイルのパスを出す",
+    "inlets": [
+     "なし（ドロップ操作で発火）"
+    ],
+    "outlets": [
+     "1: ドロップされたファイルの絶対パス",
+     "2: ファイルの種類"
+    ],
+    "args": "なし",
+    "example": "サンプラーデバイスに、音声ファイルをドラッグ＆ドロップで読み込ませるUIを作る",
+    "note": "パッチがロックされているときだけ機能する。受け付けるファイル形式は types アトリビュートで絞り込める",
+    "uncertain": false
+   }
+  ]
+ },
+ {
+  "category": "Live UIオブジェクト（M4L専用）",
+  "objects": [
+   {
+    "name": "live.dial",
+    "summary": "Ableton Live標準のノブと同じ見た目・動きをする、M4L専用の回転ノブ",
+    "inlets": [
+     "1: 値の設定、bangで今の値を再出力"
+    ],
+    "outlets": [
+     "1: 今の値"
+    ],
+    "args": "なし（範囲や単位はインスペクタで設定する）",
+    "example": "デバイスのパラメータを、Live純正のプラグインと同じ見た目のノブで操作させる",
+    "note": "live.*系のUIは自動的にLiveの「デバイスパラメータ」として認識され、オートメーションやマクロコントロールの対象になる。これが標準UIとの一番大きな違い",
+    "uncertain": false
+   },
+   {
+    "name": "live.slider",
+    "summary": "Ableton Live標準のスライダーと同じ見た目・動きをする、M4L専用のフェーダー",
+    "inlets": [
+     "1: 値の設定、bangで今の値を再出力"
+    ],
+    "outlets": [
+     "1: 今の値"
+    ],
+    "args": "なし",
+    "example": "音量やミックスバランスなど、Liveのミキサーと統一感のあるフェーダーとして使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "live.numbox",
+    "summary": "Live純正のプラグインと統一感のある、数値の表示・入力ボックス",
+    "inlets": [
+     "1: 値の設定、bangで今の値を再出力"
+    ],
+    "outlets": [
+     "1: 今の値"
+    ],
+    "args": "なし",
+    "example": "BPMやサンプル番号のように、数値で直接指定させたいパラメータに使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "live.button",
+    "summary": "Live純正の見た目をした押しボタン。パラメータとしてオートメーションできる",
+    "inlets": [
+     "1: 状態の設定"
+    ],
+    "outlets": [
+     "1: bangまたは状態"
+    ],
+    "args": "なし",
+    "example": "デバイス内のトリガーボタンをLiveのパラメータとして扱い、マクロコントロールに割り当てられるようにする",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "live.toggle",
+    "summary": "Live純正の見た目をしたオン/オフスイッチ",
+    "inlets": [
+     "1: 状態の設定"
+    ],
+    "outlets": [
+     "1: 今の状態（0/1）"
+    ],
+    "args": "なし",
+    "example": "エフェクトのバイパススイッチを、Liveでオートメーションできるパラメータとして実装する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "live.tab",
+    "summary": "複数の選択肢から1つを選ぶ、Live風のタブ/セレクタUI",
+    "inlets": [
+     "1: 選ぶ項目の設定"
+    ],
+    "outlets": [
+     "1: 選ばれた項目の番号"
+    ],
+    "args": "選択肢のリスト",
+    "example": "波形の種類（サイン/ノコギリ/矩形）を切り替えるセレクタとして使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "live.text",
+    "summary": "文字のラベル表示、またはクリックできるテキストボタンとして使える、Live風のUI",
+    "inlets": [
+     "1: 表示する文字を書き換える"
+    ],
+    "outlets": [
+     "1: クリックしたときのメッセージ"
+    ],
+    "args": "表示する文字",
+    "example": "セクションのラベル表示や、モード切り替えボタンの文字表示に使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "live.menu",
+    "summary": "Live純正の見た目をした、ドロップダウンメニュー",
+    "inlets": [
+     "1: 選択肢のリストや、選ぶ番号の設定"
+    ],
+    "outlets": [
+     "1: 選ばれた項目の番号"
+    ],
+    "args": "選択肢のリスト",
+    "example": "スケールの選択や、ルーティング先を選ぶメニューに使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "live.grid",
+    "summary": "格子状のパッドやステップをクリックして操作する、Live風のグリッドUI。ステップシーケンサーなどに便利",
+    "inlets": [
+     "1: マス目の状態を一括で設定する命令"
+    ],
+    "outlets": [
+     "1: クリックされたマスの情報"
+    ],
+    "args": "行数、列数",
+    "example": "ドラムパターンや、クリップランチャーのようなインターフェースを作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "live.meter~",
+    "summary": "Live純正の見た目をした、オーディオレベルメーター",
+    "inlets": [
+     "1（信号）: 表示したい信号"
+    ],
+    "outlets": [
+     "1: 今のレベル（任意）"
+    ],
+    "args": "なし",
+    "example": "デバイスの出力レベルを、Liveのミキサーと統一感のある見た目で表示する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "live.gain~",
+    "summary": "Live純正のフェーダーと同じ見た目・動きをする、dB単位のゲイン調整UI",
+    "inlets": [
+     "1（信号）: 入力信号"
+    ],
+    "outlets": [
+     "1（信号）: 音量調整後の信号"
+    ],
+    "args": "なし",
+    "example": "デバイスのマスター音量フェーダーを、Liveのミキサーに近い操作感で実装する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "live.scope~",
+    "summary": "Live純正の見た目をした、オシロスコープ表示UI",
+    "inlets": [
+     "1（信号）: 表示したい信号"
+    ],
+    "outlets": [
+     "なし"
+    ],
+    "args": "なし",
+    "example": "波形の見た目を、LiveのUIのトーンに合わせて表示する",
+    "note": "",
+    "uncertain": false
+   }
+  ]
+ },
+ {
+  "category": "Live API・M4L特有オブジェクト",
+  "objects": [
+   {
+    "name": "live.object",
+    "summary": "Live APIで、特定のもの（トラック、デバイス、クリップなど）のプロパティ（名前や音量など）を取得・変更する",
+    "inlets": [
+     "1: get/setなどのLive API命令"
+    ],
+    "outlets": [
+     "1: 取得した結果",
+     "2: プロパティが変わったときの通知など"
+    ],
+    "args": "なし（live.pathなどで先にIDを渡し、対象を指定する）",
+    "example": "[live.path live_set tracks 0] → [live.object] で、1トラック目の名前や音量を取得・変更する",
+    "note": "Live APIは非常に幅広い階層構造を持つため、対象のプロパティ名はLive Object Model（LOM）のリファレンスでその都度調べる必要がある",
+    "uncertain": false
+   },
+   {
+    "name": "live.path",
+    "summary": "Live Object Model（LOM）の階層を、住所のような文字列で指定して、目的のもの（トラックやデバイスなど）への参照を取得する",
+    "inlets": [
+     "1: パスの文字列や、相対的に移動する命令"
+    ],
+    "outlets": [
+     "1: 対象のID"
+    ],
+    "args": "最初のパス（例: live_set tracks 0 devices 0）",
+    "example": "\"live_set tracks 0\" のようなパスを指定して1トラック目への参照を得て、live.objectで操作する",
+    "note": "「今いる場所からの相対パス」を指定する高度な機能もあり、詳しくはLive APIのドキュメントで確認するのがおすすめ",
+    "uncertain": false
+   },
+   {
+    "name": "live.observer",
+    "summary": "Live Object Modelの特定のプロパティを見張っておき、値が変わった瞬間に自動で知らせてくれる",
+    "inlets": [
+     "1: 見張る対象のIDやプロパティ名の設定"
+    ],
+    "outlets": [
+     "1: プロパティが変わるたびに、その新しい値"
+    ],
+    "args": "見張りたいプロパティ名",
+    "example": "選択中のトラックが変わるたびに自動で通知を受け取り、M4Lデバイスの表示をそのトラックの情報に切り替える",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "live.remote~",
+    "summary": "M4Lデバイスのパラメータを、Liveのデバイスパラメータ（オートメーションできる対象）として登録する",
+    "inlets": [
+     "1（信号）: パラメータの値"
+    ],
+    "outlets": [
+     "1（信号）: 値の出力"
+    ],
+    "args": "パラメータ名",
+    "example": "live.*系のUIを使わず独自デザインで作ったパラメータを、[live.remote~] 経由でLiveのオートメーションレーンに公開する",
+    "note": "信号レートでパラメータを制御する、やや専門的なオブジェクト",
+    "uncertain": true
+   },
+   {
+    "name": "live.thisdevice",
+    "summary": "そのM4Lデバイス自身の状態（オン/オフ、フリーズ、これから削除されるなど）を検知する",
+    "inlets": [
+     "なし（状態が変わると自動でメッセージが来る）"
+    ],
+    "outlets": [
+     "1: デバイスの状態変化に応じたメッセージ"
+    ],
+    "args": "なし",
+    "example": "デバイスの電源が切られたときに音を止めたり、削除される直前に後片付けをしたりする制御に使う",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "plugin~",
+    "summary": "M4Lデバイスの音の出入り口。Live上でオーディオ/MIDIエフェクトやインストゥルメントとして動くための、音声の入出力窓口",
+    "inlets": [
+     "1（信号）: Liveから渡されるオーディオ入力（Audio Effectの場合）"
+    ],
+    "outlets": [
+     "1（信号）: Liveへ返すオーディオ出力"
+    ],
+    "args": "なし",
+    "example": "Audio Effectデバイスで、[plugin~] の入力に届いた音を加工し、出力からLiveのトラックに音を返す",
+    "note": "Instrument系のM4Lデバイスでは、MIDI入力（noteinなど）とplugin~（オーディオ出力用）を組み合わせて使う構成が一般的",
+    "uncertain": false
+   },
+   {
+    "name": "live.step",
+    "summary": "MIDIのステップを、グリッド状に打ち込んで編集できるUI。Live純正のステップシーケンサーに近い機能",
+    "inlets": [
+     "1: ステップデータの設定や、再生位置の制御"
+    ],
+    "outlets": [
+     "1: 今のステップのノート情報"
+    ],
+    "args": "ステップ数、音の高さの範囲など",
+    "example": "M4LのMax Instrumentデバイスに、Live標準に近い操作感のステップシーケンサーを組み込む",
+    "note": "比較的新しく追加された機能のため、細かい仕様はヘルプファイルや公式リファレンスでの確認を推奨",
+    "uncertain": true
+   }
+  ]
+ },
+ {
+  "category": "ユーティリティ・デバッグ",
+  "objects": [
+   {
+    "name": "print",
+    "summary": "受け取ったメッセージを、Maxウィンドウ（コンソール画面）に文字で表示する。デバッグの一番の基本",
+    "inlets": [
+     "1: 表示したいメッセージ"
+    ],
+    "outlets": [
+     "なし"
+    ],
+    "args": "表示するときの見出し（どの[print]から来たか区別するためのラベル）",
+    "example": "[print debug-freq] のように見出しを付けておき、複数箇所の値をMaxウィンドウで見分けながら動作を確認する",
+    "note": "パッチの動作確認で、最初に覚えておきたいオブジェクト。アトリビュートの @popup 1 を付けると、メッセージを受け取るたびにMaxウィンドウが自動的に前面に表示されるようになる（デフォルトは0で自動表示しない）。ほかにも @level（Post/Warning/Errorなど表示の強調度）、@deltatime（前回のメッセージからの経過時間も表示）、@floatprecision（小数の表示桁数）といったアトリビュートもある",
+    "uncertain": false
+   },
+   {
+    "name": "active",
+    "summary": "Max（またはLiveアプリ）が今、画面の一番手前で操作されているアプリかどうかを検知する",
+    "inlets": [
+     "なし（自動で検知する）"
+    ],
+    "outlets": [
+     "1: 手前に来たら1、後ろに回ったら0"
+    ],
+    "args": "なし",
+    "example": "アプリが裏に回ったときに重い描画処理を止めて、CPUの負荷を下げる",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "mousestate",
+    "summary": "マウスカーソルの画面上の位置や、ボタンが押されているかを取得する",
+    "inlets": [
+     "1: 問い合わせの命令（bangなど）"
+    ],
+    "outlets": [
+     "1: X座標",
+     "2: Y座標",
+     "3: ボタンの状態"
+    ],
+    "args": "なし",
+    "example": "jsuiで自作するXYパッドUIの、独自のマウス操作を実装する",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "key",
+    "summary": "パソコンのキーボードで押されたキーの種類を取得する",
+    "inlets": [
+     "なし（自動で検知する）"
+    ],
+    "outlets": [
+     "1: 押されたキーのコード"
+    ],
+    "args": "なし",
+    "example": "スペースキーで再生/停止を切り替える、といったキーボードショートカットを自作する",
+    "note": "M4Lデバイスの中では、Live本体のキーボードショートカットとぶつかる可能性があるので、使う場面には注意",
+    "uncertain": false
+   },
+   {
+    "name": "keyup",
+    "summary": "パソコンのキーボードで、押していたキーを離した瞬間のキーの種類を取得する",
+    "inlets": [
+     "なし（自動で検知する）"
+    ],
+    "outlets": [
+     "1: 離されたキーのコード"
+    ],
+    "args": "なし",
+    "example": "キーを押している間だけ音を鳴らし、離したらノートオフする、という制御を key と組み合わせて作る",
+    "note": "",
+    "uncertain": false
+   },
+   {
+    "name": "poly~",
+    "summary": "1つのパッチを複数コピーして、和音（ポリフォニック）を鳴らせるようにする。シンセで和音を弾けるようにする仕組みの中核",
+    "inlets": [
+     "中のサブパッチに置いた [in]/[in~] のうち、一番大きい番号の数だけできる（ボイス数の引数とは関係ない）"
+    ],
+    "outlets": [
+     "中のサブパッチに置いた [out]/[out~] のうち、一番大きい番号の数だけできる。各ボイスからの出力は自動でまとめて混ぜられる"
+    ],
+    "args": "中で使うパッチのファイル名、ボイス数（同時に鳴らせる音の数）",
+    "example": "[poly~ mysynth~ 8] で、単音用に作った [mysynth~] というパッチを8個分自動でコピーし、同時に8音までの和音を鳴らせるようにする",
+    "note": "インレット/アウトレットを増やしたいときは、中のサブパッチに [in 2]・[in~ 2] のように番号付きで置く(通常のサブパッチで使う[inlet]/[outlet]とは別物のオブジェクト)。また\"target 3\"のようなメッセージを送ると、次に送るメッセージを3番目のボイスだけに宛てて送れる(これは@から始まる作成時アトリビュートではなく、実行中に送るメッセージ)。各ボイスの中では thispoly~ というオブジェクトを使い、「今どの音を鳴らすボイスか」の割り当てやミュート処理を行う",
+    "uncertain": false
+   },
+   {
+    "name": "thispoly~",
+    "summary": "poly~の中に置いて使う相棒オブジェクト。「自分は何番目のボイスか」「今使われているか」を教えてくれたり、ミュートしたりできる",
+    "inlets": [
+     "1: bang（自分の状態を報告）、int（使用中/未使用の切り替え）、mute（音声処理の一時停止）、信号（音の有無で自動的に使用中/未使用を判定）"
+    ],
+    "outlets": [
+     "1: 自分のボイス番号（poly~の外なら0）",
+     "2: ミュート状態（1=ミュート中）",
+     "3: 全体のボイス数（poly~の外なら1）"
+    ],
+    "args": "なし",
+    "example": "各ボイスの中に [thispoly~] を置き、音量が0になったら mute メッセージを送って、鳴っていないボイスのCPU負荷を減らす",
+    "note": "poly~と必ずセットで使うオブジェクトなので、poly~を使うなら合わせて覚えておきたい",
+    "uncertain": false
+   },
+   {
+    "name": "bpatcher",
+    "summary": "別のパッチファイルを、今のパッチの中に埋め込んで表示できる「部品」にする",
+    "inlets": [
+     "埋め込んだパッチ側で作ったインレットに対応"
+    ],
+    "outlets": [
+     "埋め込んだパッチ側で作ったアウトレットに対応"
+    ],
+    "args": "埋め込むパッチのファイル名、表示サイズ",
+    "example": "1つのエフェクトモジュールを [bpatcher] にしておき、複数のデバイスやパッチで使い回せる部品として再利用する",
+    "note": "見た目付きの再利用できるサブパッチを作るときの、標準的なやり方",
+    "uncertain": false
+   },
+   {
+    "name": "date",
+    "summary": "今の日付・時刻・パソコン起動からの経過時間を取得する",
+    "inlets": [
+     "なし（date/time/ticks の各メッセージで応答する）"
+    ],
+    "outlets": [
+     "1: 日付（月/日/年）",
+     "2: 時刻（時/分/秒）",
+     "3: 起動からの経過（1/60秒単位）"
+    ],
+    "args": "なし",
+    "example": "書き出すログファイルやプリセット名に、保存した日時を自動で記録する",
+    "note": "",
+    "uncertain": false
+   }
+  ]
+ },
+ {
+  "category": "アトリビュート（@設定）",
+  "isAttr": true,
+  "objects": [
+   {
+    "name": "アトリビュート（@name value）とは",
+    "summary": "オブジェクト名のあとに「@属性名 値」の形で書く、追加の設定項目。書く順番が決まっている普通の引数と違い、名前で指定するので順不同で、必要なものだけ書ける",
+    "inlets": [],
+    "outlets": [],
+    "args": "1つのオブジェクトに複数のアトリビュートを続けて書ける。例: [print @popup 1]、[filterdesign @response lowpass @order 4]",
+    "example": "[live.dial @parameter_enable 1 @varname myKnob] のように、1つのオブジェクトへ複数のアトリビュートを組み合わせて細かく設定するのが基本的な使い方",
+    "note": "そのオブジェクトがどんなアトリビュートを持っているかは、オブジェクトを右クリック→「インスペクタを開く」で一覧・編集ができるほか、公式リファレンスページの「Attributes」欄でも確認できる。作成時に @name value と書く方法のほかに、パッチ実行中に \"属性名 値\" というメッセージを送って値を変更する方法もある",
+    "uncertain": false
+   },
+   {
+    "name": "@varname",
+    "summary": "オブジェクトに「スクリプト用の名前」を付けるアトリビュート。thispatcherやJavaScript、Live APIなどから、そのオブジェクトを名前で名指しして操作できるようにする",
+    "inlets": [],
+    "outlets": [],
+    "args": "パッチ内で他と重複しない名前を指定する（例: @varname myKnob）",
+    "example": "[live.dial @varname myKnob] としておき、[thispatcher] から \"myKnob\" 宛てにメッセージを送って値を操作する、といった使い方",
+    "note": "live.*系のオブジェクトでパラメーターモード（@parameter_enable 1）を使う場合、@varnameの指定は必須になる",
+    "uncertain": false
+   },
+   {
+    "name": "@bgcolor / @textcolor",
+    "summary": "UIオブジェクトの背景色・文字色を指定する、見た目まわりの基本アトリビュート。number、toggle、live.*系など、ほとんどのUIオブジェクトで共通して使える",
+    "inlets": [],
+    "outlets": [],
+    "args": "赤・緑・青・透明度を0〜1の数値4つで指定する（例: @bgcolor 0.2 0.2 0.2 1.）",
+    "example": "[toggle @bgcolor 0.9 0.2 0.2 1.] で警告用に赤く目立たせるなど、見た目で役割を区別したいときに使う",
+    "note": "色以外にも、多くのUIオブジェクトに共通する「共通アトリビュート」として @size（大きさ）や @presentation（プレゼンテーションモードでの表示）などがある",
+    "uncertain": false
+   },
+   {
+    "name": "@hidden",
+    "summary": "パッチ実行中（パフォーマンスモード）にそのオブジェクトを画面から見えなくするアトリビュート。編集中は普通に表示され続ける",
+    "inlets": [],
+    "outlets": [],
+    "args": "1で非表示、0（デフォルト）で表示",
+    "example": "調整用のパラメーターは表示しつつ、デバッグ用に置いた[print]やコメントだけ @hidden 1 にして本番の画面から隠す、といった使い方",
+    "note": "「消す」のではなく「一時的に隠す」だけなので、編集モードに戻ればいつでも見える",
+    "uncertain": false
+   },
+   {
+    "name": "@parameter_enable",
+    "summary": "live.dialやlive.numboxなどのUIオブジェクトを、Liveのデバイスパラメーター（オートメーション・プリセット保存・MIDIマッピングの対象）として扱えるようにするアトリビュート。M4Lでは特に重要",
+    "inlets": [],
+    "outlets": [],
+    "args": "1でパラメーターモードを有効化。あわせて @parameter_type（int/float/enumなど値の種類）、@parameter_shortname（デバイス画面での表示名）、@parameter_mmin/@parameter_mmax（オートメーションの範囲）、@parameter_initial（デフォルト値）、@parameter_visibility（オートメーション対象にするかなど）といった関連アトリビュートで細かく設定する",
+    "example": "[live.dial @parameter_enable 1 @varname cutoff @parameter_shortname Cutoff] として、Liveのデバイス画面にノブを出しつつ、オートメーションやプリセット保存の対象にする",
+    "note": "パラメーターモードを使うオブジェクトには @varname の指定もあわせて必要になる。設定項目が多いので、まずはインスペクタのParameterタブから触ってみると分かりやすい",
+    "uncertain": true
+   },
+   {
+    "name": "@response（filterdesignなど）",
+    "summary": "filterdesignで、作りたいフィルターの種類（応答特性）を指定するアトリビュート",
+    "inlets": [],
+    "outlets": [],
+    "args": "lowpass（ローパス）、highpass（ハイパス）、bandpass（バンドパス）、bandstop（バンドストップ/ノッチ）のいずれかを指定する",
+    "example": "[filterdesign @response lowpass @frequency 1000] で、1000Hzより上を削るローパスフィルターの設計条件を作る",
+    "note": "filterdesignの詳しい使い方は「filterdesign」の項目（オーディオ加工・エフェクト）を参照",
+    "uncertain": false
+   },
+   {
+    "name": "@popup（print）",
+    "summary": "printで、メッセージを受け取るたびにMaxウィンドウ（コンソール）を自動的に前面に表示させるかどうかを決めるアトリビュート",
+    "inlets": [],
+    "outlets": [],
+    "args": "1で自動的にポップアップ表示、0（デフォルト）で表示しない",
+    "example": "[print @popup 1] にしておくと、想定外の値が流れてきたときにMaxウィンドウが自動で前面に出てくるので、デバッグ中に見落としにくくなる",
+    "note": "printの基本的な使い方は「print」の項目（ユーティリティ・デバッグ）を参照。ほかにも @level（Post/Warning/Error表示）や @deltatime（経過時間表示）などのアトリビュートがある",
+    "uncertain": false
+   }
+  ]
+ },
+ {
+  "category": "サブパッチ・モジュール化",
+  "objects": [
+   {
+    "name": "patcher (p)",
+    "summary": "パッチの中に、さらに別のパッチ(サブパッチ)を埋め込むためのオブジェクト。複雑な処理を1つの箱にまとめて見た目をすっきりさせる、「モジュール化」の基本",
+    "inlets": [
+     "中に置いたinletオブジェクトの数だけできる"
+    ],
+    "outlets": [
+     "中に置いたoutletオブジェクトの数だけできる"
+    ],
+    "args": "サブパッチの名前(ウィンドウのタイトルバーに表示されるだけで、同じ名前どうしで中身を共有するわけではない)",
+    "example": "オシレーター＋フィルター＋エンベロープをまとめて [p voice] という1つの箱にし、メインのパッチをすっきりさせる",
+    "note": "ダブルクリックで中身を開いて編集できる。中身はすべて親パッチのファイルの一部として保存される(別ファイルになるアブストラクションとはこの点が違う)",
+    "uncertain": false
+   },
+   {
+    "name": "inlet",
+    "summary": "サブパッチ(patcherオブジェクトの中)に置いて使う、「外から来た値をここで受け取る」という入り口の目印",
+    "inlets": [
+     "なし(サブパッチの外側から接続される)"
+    ],
+    "outlets": [
+     "1: 外から届いた値"
+    ],
+    "args": "なし",
+    "example": "サブパッチ内に [inlet] を2個置くと、そのpatcherオブジェクトに左から2つのインレットができる。置いた順番(左右の位置)がそのままインレットの番号になる",
+    "note": "@commentアトリビュートで説明文を付けておくと、patcherオブジェクトにマウスを乗せたときにインレットの役割がヒントとして表示される",
+    "uncertain": false
+   },
+   {
+    "name": "outlet",
+    "summary": "サブパッチ(patcherオブジェクトの中)に置いて使う、「ここから外に値を出す」という出口の目印",
+    "inlets": [
+     "1: 外に出したい値"
+    ],
+    "outlets": [
+     "なし(サブパッチの外側に接続される)"
+    ],
+    "args": "なし",
+    "example": "サブパッチ内に [outlet] を1個置くと、そのpatcherオブジェクトに1つだけアウトレットができる",
+    "note": "inletと同様、置いた順番(左右の位置)がそのままpatcherオブジェクト側のアウトレット番号になる",
+    "uncertain": false
+   },
+   {
+    "name": "in / in~",
+    "summary": "poly~の中のサブパッチだけで使う、インレットの目印。通常のサブパッチで使う[inlet]とは別物で、poly~専用のオブジェクト",
+    "inlets": [
+     "なし(poly~の外側から接続される)"
+    ],
+    "outlets": [
+     "1: 外から届いた値(inはメッセージ用、in~は信号用)"
+    ],
+    "args": "何番目のインレットに対応するか(例: [in 2] なら2番目のインレット)。番号は左右の配置ではなく、この引数の数字で決まる",
+    "example": "[poly~ mysynth~ 8] の中身であるmysynth~.maxpatに [in 1] と [in~ 2] を置くと、poly~には1番目(メッセージ用)と2番目(信号用)の合計2つのインレットができる",
+    "note": "通常のサブパッチ(patcherオブジェクト)で使う[inlet]とは違うオブジェクトなので注意。poly~のインレットを増やしたいときは、この[in]/[in~]をより大きい番号で置く",
+    "uncertain": false
+   },
+   {
+    "name": "out / out~",
+    "summary": "poly~の中のサブパッチだけで使う、アウトレットの目印。通常のサブパッチで使う[outlet]とは別物で、poly~専用のオブジェクト",
+    "inlets": [
+     "1: 外に出したい値(outはメッセージ用、out~は信号用)"
+    ],
+    "outlets": [
+     "なし(poly~の外側に接続される)"
+    ],
+    "args": "何番目のアウトレットに対応するか(例: [out~ 1] なら1番目のアウトレット)",
+    "example": "各ボイスの音を [out~ 1] でまとめて出すようにしておくと、poly~は複数ボイス分の音を自動でミックスして1つのアウトレットから出してくれる",
+    "note": "信号用のout~が先に並び、そのあとにメッセージ用のoutが続く形でpoly~側のアウトレットが決まる。通常のサブパッチで使う[outlet]とは別物のオブジェクトなので注意",
+    "uncertain": false
+   }
+  ]
+ },
+ {
+  "category": "使い方のポイント（概念）",
+  "isConcept": true,
+  "objects": [
+   {
+    "name": "プレゼンテーションモード",
+    "summary": "パッチの「配線を組む画面」とは別に、UIだけをきれいに並べた「見せる用の画面」を作れる、Maxの表示モード。M4Lデバイスの見た目はほぼこれで作る",
+    "inlets": [],
+    "outlets": [],
+    "args": "ロックしていない状態でUIオブジェクトをシフトクリックで選び、右クリックメニュー(またはObjectメニュー)の\"Add to Presentation\"で追加する。追加された部品はピンク色の枠で表示される",
+    "example": "パッチング画面ではオシレーター・フィルター・LFOがゴチャゴチャに配置されていても、プレゼンテーションモードでは操作してほしいノブだけを整列させて見せる、というデバイスの「表側」を作る",
+    "note": "パッチャーインスペクタで\"Open in Presentation\"を有効にしておくと、デバイスを開いたときに最初からプレゼンテーションモードで表示される。Live上のデバイスビューは基本的にこの画面がそのまま使われる",
+    "uncertain": false
+   },
+   {
+    "name": "フリーズ（Freeze）",
+    "summary": "M4Lデバイスが参照しているサブパッチ・音声ファイル・画像・外部オブジェクトなどのファイル一式を、デバイス自身の中に丸ごと閉じ込めて、単体で完結したファイルにする機能。配布用のパッケージング作業",
+    "inlets": [],
+    "outlets": [],
+    "args": "デバイスウィンドウのツールバーにあるFreezeボタンを押してから、ファイルを保存(Save)すると確定する",
+    "example": "自作の.amxdデバイスを人に配るとき、参照している外部のjsファイルや画像がバラバラのままだと相手の環境で動かないことがあるので、配布前にFreezeしてひとまとめにする",
+    "note": "Freezeボタンを押しただけではまだ確定しない。保存する前ならもう一度Freezeボタンを押して解除できる。CPU負荷を下げるためのLive本体の「トラックのフリーズ」とは別の機能で、こちらはあくまで配布用にファイルをまとめて固める機能",
+    "uncertain": false
+   },
+   {
+    "name": "サブパッチ／アブストラクション／bpatcherの違い",
+    "summary": "どれも「パッチの中に別のパッチを入れる」ための方法だが、保存先と再利用のされ方が違う。用途に応じて使い分ける",
+    "inlets": [],
+    "outlets": [],
+    "args": "サブパッチ(patcher/p): 親パッチのファイルの中に埋め込まれる。1個ずつ独立していて、片方を変えてももう片方には影響しない。アブストラクション: 別の.maxpatファイルを[ファイル名]とだけ書いて読み込む方式。同じ名前で複数箇所に置くと、ファイルを1箇所直せば全部に反映される。bpatcher: アブストラクションと同様に別ファイルを参照しつつ、見た目(UI部分)だけをその場に埋め込んで表示できる",
+    "example": "1つのデバイス内だけで使う複雑な処理はサブパッチに、複数のデバイスやパッチで使い回したい共通パーツ(コード進行のロジックなど)はアブストラクションやbpatcherにする",
+    "note": "アブストラクションは #1 のような書き方や patcherargs オブジェクトを使って、読み込むたびに違う引数(初期値)を渡せる。「Abstraction to Embedded Subpatcher」でアブストラクション→サブパッチへの変換もできる",
+    "uncertain": false
+   },
+   {
+    "name": "target（poly~のボイス宛先指定）",
+    "summary": "poly~に\"target 番号\"というメッセージを送ることで、そのあとに送るメッセージを特定の1ボイスだけに宛てて送れるようにする仕組み。@から始まる作成時アトリビュートではなく、実行中にインレットへ送るメッセージ",
+    "inlets": [],
+    "outlets": [],
+    "args": "\"target 3\"で3番目のボイスだけに宛先を切り替える。\"target 0\"で全ボイス宛てに戻す(デフォルト)。ボイス数を超える番号を送ると一番大きい番号のボイスに送られ、マイナスの値を送るとどのボイスにも送られなくなる",
+    "example": "[poly~ mysynth~ 8] に \"target 3, 1 0.5\" のように送ると、3番目のボイスだけに \"1 0.5\" というメッセージが届く。特定の音だけを個別に操作したいときに使う",
+    "note": "\"@\"で始まるアトリビュート(@varnameなど)とは違い、targetはパッチ実行中にメッセージとして送る操作。ボイスの使用中/未使用の状態を調べたいときは busymap メッセージ、各ボイス側の状態管理は thispoly~ を使う",
+    "uncertain": false
+   }
+  ]
+ }
+]
+</script>
+
+<script>
+(function(){
+  var raw = document.getElementById('__DATA__').textContent;
+  var DATA = JSON.parse(raw);
+
+  var totalObjects = 0;
+  DATA.forEach(function(c){ if(!c.isAttr && !c.isConcept) totalObjects += c.objects.length; });
+  document.getElementById('totalCount').textContent = totalObjects;
+
+  function dotClass(name){
+    if(name.indexOf('@') === 0) return 'attr';
+    if(name.indexOf('live.') === 0 || name === 'plugin~') return 'live';
+    if(name.indexOf('~') !== -1) return 'sig';
+    return 'msg';
+  }
+
+  function esc(s){
+    return String(s).replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; });
+  }
+
+  function highlight(text, q){
+    var e = esc(text);
+    if(!q) return e;
+    try{
+      var re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+      return e.replace(re, '<span class="hl">$1</span>');
+    }catch(err){ return e; }
+  }
+
+  var catsEl = document.getElementById('categories');
+  var chipsEl = document.getElementById('chips');
+  var searchEl = document.getElementById('search');
+  var resultInfo = document.getElementById('resultInfo');
+  var noResults = document.getElementById('noResults');
+
+  var activeCats = new Set(DATA.map(function(c){ return c.category; }));
+
+  // build chips
+  var allChip = document.createElement('button');
+  allChip.className = 'chip';
+  allChip.textContent = 'すべて';
+  allChip.setAttribute('aria-pressed', 'true');
+  allChip.addEventListener('click', function(){
+    activeCats = new Set(DATA.map(function(c){ return c.category; }));
+    render();
+  });
+  chipsEl.appendChild(allChip);
+
+  DATA.forEach(function(cat){
+    var chip = document.createElement('button');
+    chip.className = 'chip';
+    chip.textContent = cat.category + ' (' + cat.objects.length + ')';
+    chip.dataset.cat = cat.category;
+    chip.setAttribute('aria-pressed', 'true');
+    chip.addEventListener('click', function(){
+      if(activeCats.size === DATA.length && activeCats.has(cat.category)){
+        activeCats = new Set([cat.category]);
+      } else if(activeCats.has(cat.category) && activeCats.size === 1){
+        activeCats = new Set(DATA.map(function(c){ return c.category; }));
+      } else {
+        activeCats = new Set([cat.category]);
+      }
+      render();
+    });
+    chipsEl.appendChild(chip);
+  });
+
+  function updateChips(){
+    var allActive = activeCats.size === DATA.length;
+    allChip.setAttribute('aria-pressed', String(allActive));
+    Array.prototype.forEach.call(chipsEl.querySelectorAll('.chip[data-cat]'), function(chip){
+      chip.setAttribute('aria-pressed', String(allActive || activeCats.has(chip.dataset.cat)));
+    });
+  }
+
+  function fieldBlock(label, content){
+    if(!content) return '';
+    return '<div class="field"><b>' + esc(label) + '</b>' + content + '</div>';
+  }
+
+  function listBlock(items){
+    if(!items || !items.length) return '';
+    return '<ul>' + items.map(function(i){ return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>';
+  }
+
+  function cardHTML(obj, q, catName, forceRefDot){
+    var dc = forceRefDot ? 'attr' : dotClass(obj.name);
+    var tags = '';
+    if(catName || obj.uncertain){
+      tags = '<span class="tags-right">' +
+        (catName ? '<span class="cat-tag">' + esc(catName) + '</span>' : '') +
+        (obj.uncertain ? '<span class="uflag">要確認</span>' : '') +
+        '</span>';
+    }
+    var head = '<div class="card-head"><span class="dot ' + dc + '"></span><span class="card-name">' + highlight(obj.name, q) + '</span>' + tags + '</div>';
+    var summary = '<div class="summary">' + highlight(obj.summary, q) + '</div>';
+    var inlets = fieldBlock('インレット', listBlock(obj.inlets));
+    var outlets = fieldBlock('アウトレット', listBlock(obj.outlets));
+    var args = obj.args ? fieldBlock('主な引数', '<div>' + highlight(obj.args, q) + '</div>') : '';
+    var example = obj.example ? '<div class="example"><b style="font-size:.66rem;letter-spacing:.03em;display:block;margin-bottom:2px;opacity:.7;">使用例</b>' + highlight(obj.example, q) + '</div>' : '';
+    var note = obj.note ? '<div class="note">💡 ' + highlight(obj.note, q) + '</div>' : '';
+    return '<article class="card">' + head + summary + inlets + outlets + args + example + note + '</article>';
+  }
+
+  // 関連度スコアリング:名前の完全一致・前方一致・部分一致を最優先し、
+  // 説明文・引数・使用例・注意点・インレット/アウトレット・カテゴリ名の順に重みを下げる
+  function scoreOf(obj, catName, q){
+    if(!q) return 0;
+    var ql = q.toLowerCase();
+    var nameL = obj.name.toLowerCase();
+    var score = 0;
+    if(nameL === ql) score = Math.max(score, 100);
+    else if(nameL.indexOf(ql) === 0) score = Math.max(score, 85);
+    else if(nameL.indexOf(ql) !== -1) score = Math.max(score, 70);
+    if(obj.summary && obj.summary.toLowerCase().indexOf(ql) !== -1) score = Math.max(score, 50);
+    if(obj.args && obj.args.toLowerCase().indexOf(ql) !== -1) score = Math.max(score, 35);
+    if(obj.example && obj.example.toLowerCase().indexOf(ql) !== -1) score = Math.max(score, 30);
+    if(obj.note && obj.note.toLowerCase().indexOf(ql) !== -1) score = Math.max(score, 25);
+    var io = (obj.inlets||[]).concat(obj.outlets||[]).join(' ').toLowerCase();
+    if(io.indexOf(ql) !== -1) score = Math.max(score, 25);
+    if(catName.toLowerCase().indexOf(ql) !== -1) score = Math.max(score, 10);
+    return score;
+  }
+
+  function render(){
+    updateChips();
+    var q = searchEl.value.trim();
+    catsEl.innerHTML = '';
+
+    if(q){
+      // 検索時:カテゴリの区切りを外し、関連度が高い順に1本のリストで見せる
+      var results = [];
+      DATA.forEach(function(cat){
+        if(!activeCats.has(cat.category)) return;
+        cat.objects.forEach(function(o){
+          var s = scoreOf(o, cat.category, q);
+          if(s > 0) results.push({ obj:o, cat:cat.category, score:s, ref: !!(cat.isAttr || cat.isConcept) });
+        });
+      });
+      results.sort(function(a, b){ return b.score - a.score; });
+
+      if(results.length){
+        var header = document.createElement('div');
+        header.className = 'results-header';
+        header.innerHTML = '<span>検索結果</span><span class="cat-count">' + results.length + '件</span>';
+        catsEl.appendChild(header);
+
+        var grid = document.createElement('div');
+        grid.className = 'results-grid';
+        grid.innerHTML = results.map(function(r){ return cardHTML(r.obj, q, r.cat, r.ref); }).join('');
+        catsEl.appendChild(grid);
+      }
+
+      noResults.hidden = results.length !== 0;
+      var catCount = new Set(results.map(function(r){ return r.cat; })).size;
+      resultInfo.textContent = results.length ? (results.length + '件のオブジェクトが' + catCount + 'カテゴリで見つかりました(関連度順)') : '';
+      return;
+    }
+
+    // 検索していないとき:カテゴリごとの折りたたみで一覧表示
+    var shown = 0;
+    DATA.forEach(function(cat, idx){
+      if(!activeCats.has(cat.category)) return;
+      var matched = cat.objects;
+      shown += matched.length;
+
+      var details = document.createElement('details');
+      details.className = 'category';
+      details.open = idx === 0;
+
+      var summary = document.createElement('summary');
+      summary.innerHTML = '<span>' + esc(cat.category) + '</span><span style="display:flex;align-items:center;gap:8px;"><span class="cat-count">' + matched.length + '</span><svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></span>';
+      details.appendChild(summary);
+
+      var body = document.createElement('div');
+      body.className = 'cat-body';
+      body.innerHTML = matched.map(function(o){ return cardHTML(o, '', null, !!(cat.isAttr || cat.isConcept)); }).join('');
+      details.appendChild(body);
+
+      catsEl.appendChild(details);
+    });
+
+    noResults.hidden = shown !== 0;
+    resultInfo.textContent = '';
+  }
+
+  searchEl.addEventListener('input', function(){ render(); });
+
+  // restore last search / open state per-viewer (best-effort, non-critical)
+  try{
+    var savedQ = sessionStorage.getItem('maxdict_q');
+    if(savedQ){ searchEl.value = savedQ; }
+  }catch(e){}
+  searchEl.addEventListener('input', function(){
+    try{ sessionStorage.setItem('maxdict_q', searchEl.value); }catch(e){}
+  });
+
+  render();
+})();
+</script>
